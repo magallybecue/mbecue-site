@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demonstração | Não conformidades (RNC)</title>
+<style>
+:root{
+  --bg:#f3f3fa; --surface:#fff; --ink:#0c0b45; --muted:#58587a; --line:#e0e0ef;
+  --brand:#0d0c84; --brand2:#0a0a5a; --gold:#f2c562; --gold-d:#c88a1e; --soft:#ececfa;
+  --ok:#157347; --okbg:#e3f4ea; --warn:#8a5a00; --warnbg:#fff1cf; --bad:#a32035; --badbg:#fde6ea;
+  --radius:12px;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#08083a; --surface:#10104f; --ink:#ececff; --muted:#a7a7cf; --line:#25257a; --soft:#1a1a63;
+  --okbg:#10361f; --warnbg:#3a2f10; --badbg:#47121d; --ok:#7ddba0; --warn:#f3d98a; --bad:#ff9fb0;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.demo{background:var(--gold);color:#1a1400;text-align:center;font-size:13px;padding:6px 12px;font-weight:600}
+.app{max-width:1100px;margin:12px auto;padding:0 12px}
+.shell{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 8px 28px rgba(12,11,69,.12)}
+.top{background:var(--brand);color:#fff;display:flex;align-items:center;gap:12px;padding:10px 16px;font-size:13px}
+.hdr{background:linear-gradient(135deg,var(--brand2),var(--brand));color:#fff;display:flex;align-items:center;gap:12px;padding:12px 16px}
+.hdr h1{font-size:17px;margin:0;font-weight:700;flex:1}
+.steps{display:flex;gap:4px;padding:8px 12px;background:var(--soft);overflow-x:auto}
+.steps button{border:0;background:transparent;color:var(--muted);padding:7px 12px;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;white-space:nowrap}
+.steps button.on{background:var(--brand);color:#fff;font-weight:600}
+.body{padding:18px;min-height:460px}
+h2{margin:0 0 4px;font-size:18px}
+h3.s{margin:18px 0 8px;font-size:15px}
+.sub{color:var(--muted);margin:0 0 14px;font-size:14px}
+.card{border:1px solid var(--line);border-radius:var(--radius);padding:14px;background:var(--surface)}
+.kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:14px}
+.kpi{border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;background:var(--surface);color:var(--ink)}
+.kpi .n{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.kpi small{color:var(--muted)}
+.kpi.alert{border-color:var(--gold-d);box-shadow:0 0 0 2px var(--gold)}
+.kpi.alert .n{color:var(--gold-d)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+select,input,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 9px;max-width:100%}
+textarea{width:100%;min-height:80px;resize:vertical}
+label.f{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+.cols{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.hb{display:grid;grid-template-columns:130px 1fr 34px;gap:8px;align-items:center;margin:6px 0;font-size:13px;cursor:pointer;border:0;background:none;width:100%;text-align:left;color:inherit;font-family:inherit;padding:2px 0}
+.hb:hover .tr{outline:2px solid var(--gold)}
+.hb.on{font-weight:700}
+.hb .tr{background:var(--soft);border-radius:99px;height:12px;overflow:hidden;display:flex}
+.hb .tr i{display:block;height:100%}
+.c-a{background:var(--bad)} .c-t{background:var(--gold-d)} .c-c{background:var(--brand)}
+.legend{display:flex;gap:12px;font-size:12px;color:var(--muted);margin:2px 0 6px;flex-wrap:wrap}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.legend .la::before{background:var(--bad)} .legend .lt::before{background:var(--gold-d)} .legend .lc::before{background:var(--brand)}
+.months{display:flex;align-items:flex-end;gap:6px;height:130px;margin-top:6px}
+.months div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;font-size:11px;color:var(--muted);height:100%}
+.months i{display:block;width:100%;background:var(--brand);border-radius:4px 4px 0 0;min-height:2px}
+.months b{font-size:11px;color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--muted);font-weight:600;font-size:12px;border-bottom:1px solid var(--line);padding:6px 8px}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--soft)}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.p-a{background:var(--badbg);color:var(--bad)} .p-t{background:var(--warnbg);color:var(--warn)} .p-c{background:var(--okbg);color:var(--ok)}
+.p-rec{background:var(--gold);color:#1a1400}
+.btn{border:0;border-radius:10px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer}
+.btn.p{background:var(--brand);color:#fff} .btn.g{background:var(--gold);color:#1a1400} .btn.o{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn.s{padding:4px 10px;font-size:13px}
+.bar{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap}
+.note{font-size:12px;color:var(--muted);margin-top:10px}
+.why{background:var(--soft);border-radius:10px;padding:12px 14px;font-size:14px;margin-bottom:14px}
+.alertbox{border:2px solid var(--gold-d);background:var(--warnbg);color:var(--ink);border-radius:10px;padding:10px 14px;margin:10px 0;font-size:14px}
+.okbox{border:1px solid var(--line);background:var(--okbg);border-radius:10px;padding:10px 14px;margin:10px 0;font-size:14px}
+.heat{overflow-x:auto}
+.heat table{min-width:640px}
+.heat td.h{text-align:center;font-weight:700;cursor:pointer;border:1px solid var(--surface);color:var(--ink)}
+.heat td.h0{color:var(--muted);font-weight:400}
+.dots{display:flex;gap:3px}
+.dots i{width:10px;height:10px;border-radius:3px;background:var(--soft)}
+.dots i.on{background:var(--brand)}
+.tl{border-left:3px solid var(--line);margin:8px 0 0 6px;padding-left:14px}
+.tl .it{position:relative;margin-bottom:12px}
+.tl .it::before{content:"";position:absolute;left:-21px;top:5px;width:11px;height:11px;border-radius:50%;background:var(--brand)}
+.tl .it.bad::before{background:var(--bad)}
+.tl small{color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--brand);color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:20}
+.toast.on{opacity:1}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.two{grid-template-columns:1fr}.hb{grid-template-columns:100px 1fr 30px}}
+.sec{border:1px solid var(--line);border-radius:var(--radius);margin-top:12px;overflow:hidden}
+.sec>b{display:block;background:var(--soft);padding:8px 12px;font-size:13px}
+.sec table{margin:0}
+.sec td:first-child{width:36%;color:var(--muted)}
+.att{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.att figure{margin:0;width:120px}
+.att img{width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid var(--line);display:block}
+.att figcaption{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.att .doc{width:120px;height:90px;border-radius:8px;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);text-align:center;padding:4px}
+.drop{border:2px dashed var(--gold-d);border-radius:10px;padding:14px;background:var(--bg);margin-top:8px}
+/* relatório */
+.paper{background:#fff;color:#111;max-width:780px;margin:12px auto;padding:28px 32px;border:1px solid #d9d9e6;box-shadow:0 6px 20px rgba(12,11,69,.15);font:12.5px/1.4 Georgia,"Times New Roman",serif}
+.paper .ph{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #0d0c84;padding-bottom:8px;margin-bottom:10px}
+.paper .ph b{font:700 14px system-ui,sans-serif;color:#0d0c84}
+.paper .ph span{font:11.5px system-ui,sans-serif;color:#555}
+.paper h4{margin:0;font:700 17px Georgia,serif;color:#0d0c84;text-align:center;letter-spacing:.04em}
+.paper table{font-size:12px;color:#111;border:1px solid #bbb}
+.paper td{border:1px solid #ccc;padding:5px 7px;vertical-align:top}
+.paper td.k{width:30%;background:#f1f1f8;font:700 10.5px system-ui,sans-serif;color:#333;text-transform:uppercase;letter-spacing:.03em}
+.paper .sig{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.paper .sig div{border-top:1px solid #333;padding-top:4px;font:11px system-ui,sans-serif;color:#333;text-align:center;min-height:42px}
+.paper .foot{margin-top:12px;border-top:1px solid #bbb;padding-top:6px;font:10.5px system-ui,sans-serif;color:#555;display:flex;justify-content:space-between;gap:8px}
+.paper .fotos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.paper .fotos img{width:100%;height:190px;object-fit:cover;border:1px solid #ccc}
+.paper .fotos p{margin:2px 0 0;font:11px system-ui,sans-serif;color:#555}
+.stamp{display:inline-block;border:2px solid #c88a1e;color:#8a5a00;padding:2px 10px;border-radius:6px;font:700 10.5px system-ui,sans-serif;transform:rotate(-3deg)}
+@media print{
+  body *{visibility:hidden}
+  .paper,.paper *{visibility:visible}
+  .paper{position:static;box-shadow:none;border:0;margin:0 auto;page-break-after:always;max-width:none}
+  #rel{position:absolute;left:0;top:0;width:100%}
+}
+</style>
+</head>
+<body>
+<div class="demo">DEMONSTRAÇÃO com dados fictícios: clientes, contratos, projetos, setores, pessoas e ocorrências são inventados.</div>
+<div class="app">
+ <div class="shell">
+  <div class="top"><span>⠿</span><b>Gestão de Não Conformidades (RNC)</b><span style="opacity:.7">| Empresa Exemplo</span></div>
+  <div class="hdr"><h1 id="title">Painel</h1><span style="font-size:13px;opacity:.85">Ana Souza</span></div>
+  <div class="steps" id="steps"></div>
+  <div class="body" id="body"></div>
+ </div>
+ <p class="note">Esta página reproduz o conceito de um aplicativo real (Power Apps) com as cores da MBecue e dados de exemplo. A recorrência é calculada pelo <b>tipo de falha padronizado</b>, escolhido no catálogo ao abrir a RNC.</p>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const HOJE='2026-10-12';
+const SETORES=['Projeto Alfa','Projeto Beta','Manutenção','Compras','Almoxarifado','Qualidade'];
+const PESSOAS=['Ana Souza','Bruno Lima','Carla Mendes','Diego Rocha','Elisa Prado'];
+const ORIGENS=['Auditoria interna','Fiscalização do cliente','Inspeção de recebimento','Autoinspeção'];
+const DISC={'Documentação':'Qualidade','Materiais e fornecedores':'Suprimentos','Equipamentos':'Mecânica','Processo':'Gestão','Segurança':'Segurança','Qualidade do serviço':'Civil','Ambiental':'Meio ambiente'};
+const TIPOS=[
+ {id:'T1',nome:'Documento sem revisão vigente',cat:'Documentação',causa:'Documento controlado fora do repositório oficial',acao:'Centralizar documentos no repositório e bloquear cópias locais'},
+ {id:'T2',nome:'Material recebido fora da especificação',cat:'Materiais e fornecedores',causa:'Inspeção de recebimento sem critério de aceitação definido',acao:'Definir critério de aceitação e checklist de recebimento'},
+ {id:'T3',nome:'Equipamento sem calibração válida',cat:'Equipamentos',causa:'Controle de vencimentos feito em planilha individual',acao:'Controle único de vencimentos com alerta antecipado'},
+ {id:'T4',nome:'Checklist não preenchido no prazo',cat:'Processo',causa:'Responsável sem lembrete e sem substituto definido',acao:'Lembrete automático e responsável substituto'},
+ {id:'T5',nome:'EPI ausente ou vencido',cat:'Segurança',causa:'Entrega sem registro de validade',acao:'Registro de entrega com validade e conferência mensal'},
+ {id:'T6',nome:'Retrabalho por erro de medição',cat:'Qualidade do serviço',causa:'Medição conferida por uma única pessoa',acao:'Dupla conferência nas medições críticas'},
+ {id:'T7',nome:'Falha de comunicação com o cliente',cat:'Processo',causa:'Combinados verbais sem registro',acao:'Registrar combinados em ata no mesmo dia'},
+ {id:'T8',nome:'Descarte irregular de resíduos',cat:'Ambiental',causa:'Ponto de descarte sem sinalização',acao:'Sinalizar pontos e treinar a equipe'},
+ {id:'T9',nome:'Atraso na entrega de fornecedor',cat:'Materiais e fornecedores',causa:'Prazo do fornecedor não monitorado após o pedido',acao:'Acompanhar entregas por data prometida e cobrar antes do vencimento'},
+ {id:'T10',nome:'Registro de decisão não localizado',cat:'Documentação',causa:'Atas e decisões em arquivos pessoais',acao:'Guardar atas no acervo da empresa'},
+ {id:'T11',nome:'Acabamento fora do padrão',cat:'Qualidade do serviço',causa:'Padrão de acabamento sem exemplo de referência',acao:'Criar amostra de referência e inspeção por etapa'},
+ {id:'T12',nome:'Falta de identificação de materiais',cat:'Materiais e fornecedores',causa:'Etiquetagem feita só quando há tempo',acao:'Etiquetar no recebimento, antes do armazenamento'}
+];
+const CATS=[...new Set(TIPOS.map(t=>t.cat))];
+const SEV={A:'Alta',M:'Média',B:'Baixa'};
+const ST={A:'Aberta',T:'Em tratamento',C:'Concluída'};
+const RAW=[
+['T1','Projeto Alfa','2025-11-12','M','C'],['T11','Projeto Alfa','2025-11-27','M','C'],['T2','Compras','2025-12-03','A','C'],['T12','Almoxarifado','2025-12-09','B','C'],['T4','Projeto Beta','2025-12-15','B','C'],
+['T3','Manutenção','2026-01-09','A','C'],['T1','Projeto Beta','2026-01-20','M','C'],['T9','Compras','2026-01-28','M','C'],['T5','Projeto Alfa','2026-02-02','A','C'],['T2','Almoxarifado','2026-02-11','A','C'],
+['T10','Projeto Alfa','2026-02-16','M','C'],['T4','Projeto Beta','2026-02-23','B','C'],['T1','Manutenção','2026-03-05','A','C'],['T12','Almoxarifado','2026-03-12','B','C'],['T6','Projeto Alfa','2026-03-17','M','C'],
+['T9','Compras','2026-03-31','M','C'],['T7','Projeto Beta','2026-04-02','B','C'],['T3','Qualidade','2026-04-14','A','C'],['T2','Projeto Alfa','2026-04-27','A','C'],['T4','Projeto Beta','2026-05-06','M','C'],
+['T11','Projeto Beta','2026-05-12','M','C'],['T1','Compras','2026-05-18','M','C'],['T8','Manutenção','2026-05-25','M','C'],['T5','Manutenção','2026-06-11','A','C'],['T9','Compras','2026-06-24','M','C'],
+['T6','Projeto Alfa','2026-06-30','M','C'],['T2','Compras','2026-07-08','A','T'],['T10','Qualidade','2026-07-21','M','C'],['T1','Projeto Alfa','2026-08-04','M','T'],['T3','Manutenção','2026-08-19','A','C'],
+['T9','Almoxarifado','2026-08-26','M','T'],['T11','Manutenção','2026-09-02','M','A'],['T6','Projeto Beta','2026-09-08','M','T'],['T4','Projeto Beta','2026-09-14','M','T'],['T1','Qualidade','2026-09-22','B','A'],
+['T2','Almoxarifado','2026-09-30','A','A'],['T3','Projeto Beta','2026-10-02','M','A'],['T7','Projeto Alfa','2026-10-05','B','A'],['T10','Compras','2026-10-07','B','A']
+];
+const addDays=(iso,n)=>{const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
+const fmtD=iso=>iso?iso.split('-').reverse().join('/'):'—';
+const tipo=id=>TIPOS.find(t=>t.id===id);
+// fotos fictícias (SVG), para o relatório
+function foto(rot,n){
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360"><rect width="480" height="360" fill="#dcdcf0"/><rect x="0" y="250" width="480" height="110" fill="#bdbdd8"/><rect x="60" y="120" width="140" height="130" fill="#8f8fc0"/><rect x="230" y="80" width="190" height="170" fill="#a7a7d0"/><circle cx="400" cy="50" r="26" fill="#f2c562"/><text x="240" y="330" font-family="sans-serif" font-size="20" fill="#0d0c84" text-anchor="middle">${rot} (imagem fictícia ${n})</text></svg>`;
+  return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg);
+}
+let RNCS=RAW.slice().sort((a,b)=>a[2].localeCompare(b[2])).map((r,i)=>{
+  const t=tipo(r[0]);const n=i+1;const st=r[4];
+  const o={n,id:'RNC-'+String(n).padStart(4,'0'),tipo:r[0],setor:r[1],data:r[2],sev:r[3],st,resp:PESSOAS[i%PESSOAS.length],prazo:addDays(r[2],15),
+    cliente:'Cliente Modelo S.A.',contrato:'CT-'+String(100+n)+'/2026 (exemplo)',disc:DISC[t.cat],origem:ORIGENS[i%ORIGENS.length],
+    orgao:ORIGENS[i%ORIGENS.length]==='Fiscalização do cliente'?'Fiscalização do cliente':'Qualidade interna',
+    item:'Item '+String(n).padStart(3,'0')+' (exemplo)',docs:'Procedimento de exemplo PR-000',interrompido:r[3]==='A'?'Sim':'Não',relatada:PESSOAS[(i+2)%PESSOAS.length],
+    desc:'Ocorrência de "'+t.nome.toLowerCase()+'" registrada em '+r[1]+'.',causa:t.causa,
+    acaoImed:'',acaoPor:'',acaoData:'',aprov:'',aprovPor:'',aprovData:'',obs:'',coment:'',comentPor:'',comentData:'',
+    verif:'',relatorios:'',analise:'',rac:'',implementada:'',inspetor:'',inspData:'',cq:'',cqData:'',fisc:'',fiscData:'',anexos:[]};
+  if(st!=='A'){o.acaoImed=t.acao;o.acaoPor=o.resp;o.acaoData=addDays(r[2],2);o.aprov='Aprovada';o.aprovPor='Carla Mendes';o.aprovData=addDays(r[2],4);o.obs='Prazo de 15 dias acordado.'}
+  if(st==='C'){o.coment='Sem restrições após a verificação.';o.comentPor='Elisa Prado';o.comentData=addDays(r[2],9);o.verif='Verificação realizada no local; item regularizado.';o.relatorios='Relatório de inspeção '+String(n).padStart(3,'0')+' (exemplo)';o.analise='Causa raiz tratada: '+t.causa+'.';o.rac='RAC-'+String(n).padStart(3,'0');o.implementada=t.acao;o.inspetor='Diego Rocha';o.inspData=addDays(r[2],11);o.cq='Carla Mendes';o.cqData=addDays(r[2],12);o.fisc='Representante do cliente';o.fiscData=addDays(r[2],13)}
+  if(n%3===1)o.anexos=[{nome:'foto_ocorrencia_'+n+'.jpg',tipo:'img',url:foto('Foto da ocorrência',1)},{nome:'foto_evidencia_'+n+'.jpg',tipo:'img',url:foto('Evidência',2)}];
+  return o;
+});
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2400)};
+const F={cat:'',setor:'',disc:'',origem:'',st:'',per:'12',lim:3,sel:null,q:''};
+const TABS=[['painel','Painel'],['rec','Recorrência'],['lista','Lista'],['nova','Nova RNC']];
+let tela='painel',detalhe=null,relat=null,pend=[];
+function go(t){tela=t;detalhe=null;relat=null;render();window.scrollTo({top:0})}
+function perStart(){const d=new Date(HOJE+'T12:00:00');const m=F.per==='3'?3:F.per==='6'?6:12;d.setMonth(d.getMonth()-m);return d.toISOString().slice(0,10)}
+function filtradas(skip){
+  const ini=perStart();
+  return RNCS.filter(r=>r.data>=ini&&(skip==='cat'||!F.cat||tipo(r.tipo).cat===F.cat)&&(skip==='setor'||!F.setor||r.setor===F.setor)&&(skip==='disc'||!F.disc||r.disc===F.disc)&&(skip==='origem'||!F.origem||r.origem===F.origem)&&(!F.st||r.st===F.st));
+}
+function eficacia(r){
+  if(r.st!=='C')return {t:'—',c:''};
+  const dep=RNCS.find(x=>x.tipo===r.tipo&&x.setor===r.setor&&x.data>r.data);
+  if(dep)return {t:'Não eficaz: reincidiu em '+dep.id,c:'p-a',reinc:true};
+  return r.data<'2026-08-12'?{t:'Eficaz (verificada)',c:'p-c'}:{t:'Aguardando verificação',c:'p-t'};
+}
+const stPill=s=>`<span class="pill ${s==='A'?'p-a':s==='T'?'p-t':'p-c'}">${ST[s]}</span>`;
+function stats(list){
+  const m={};
+  list.forEach(r=>{(m[r.tipo]=m[r.tipo]||{tipo:r.tipo,n:0,setores:new Set(),itens:[]});m[r.tipo].n++;m[r.tipo].setores.add(r.setor);m[r.tipo].itens.push(r)});
+  return Object.values(m).sort((a,b)=>b.n-a.n||b.setores.size-a.setores.size);
+}
+const recorrente=s=>s.n>=F.lim;
+function render(){
+  $('#title').textContent={painel:'Painel de acompanhamento',rec:'Recorrência na empresa',lista:'Lista de RNCs',nova:'Abrir nova RNC'}[tela];
+  $('#steps').innerHTML=TABS.map(([k,n],i)=>`<button class="${k===tela?'on':''}" data-k="${k}">${i+1}. ${n}</button>`).join('');
+  $('#steps').querySelectorAll('button').forEach(b=>b.onclick=()=>go(b.dataset.k));
+  ({painel:vPainel,rec:vRec,lista:vLista,nova:vNova})[tela]();
+}
+function filtrosHtml(comLim){
+  return `<div class="filters">
+  <select id="fc"><option value="">Todas as categorias</option>${CATS.map(c=>`<option ${F.cat===c?'selected':''}>${esc(c)}</option>`).join('')}</select>
+  <select id="fs"><option value="">Todos os projetos e setores</option>${SETORES.map(c=>`<option ${F.setor===c?'selected':''}>${esc(c)}</option>`).join('')}</select>
+  <select id="fst"><option value="">Qualquer situação</option>${Object.entries(ST).map(([k,v])=>`<option value="${k}" ${F.st===k?'selected':''}>${v}</option>`).join('')}</select>
+  <select id="fp"><option value="12" ${F.per==='12'?'selected':''}>Últimos 12 meses</option><option value="6" ${F.per==='6'?'selected':''}>Últimos 6 meses</option><option value="3" ${F.per==='3'?'selected':''}>Últimos 3 meses</option></select>
+  ${comLim?`<select id="fl"><option value="2" ${F.lim===2?'selected':''}>Recorrente: 2 ou mais</option><option value="3" ${F.lim===3?'selected':''}>Recorrente: 3 ou mais</option><option value="4" ${F.lim===4?'selected':''}>Recorrente: 4 ou mais</option></select>`:''}
+  <button class="btn o s" id="fx">Limpar filtros</button></div>`;
+}
+function ligaFiltros(){
+  const on=(id,k,f)=>{const e=$(id);if(e)e.onchange=()=>{F[k]=f?f(e.value):e.value;render()}};
+  on('#fc','cat');on('#fs','setor');on('#fst','st');on('#fp','per');on('#fl','lim',v=>+v);
+  $('#fx').onclick=()=>{F.cat='';F.setor='';F.disc='';F.origem='';F.st='';F.per='12';F.sel=null;render()};
+}
+function barras(titulo,itens,campo){
+  const max=Math.max(1,...itens.map(i=>i.a+i.t+i.c));
+  return `<div class="card"><b>${titulo}</b><div class="legend"><span class="la">Aberta</span><span class="lt">Em tratamento</span><span class="lc">Concluída</span></div>
+  ${itens.map(i=>{const n=i.a+i.t+i.c;return `<button class="hb ${F[campo]===i.k?'on':''}" data-${campo}="${esc(i.k)}"><span>${esc(i.k)}</span><span class="tr" style="width:${n/max*100}%;min-width:${n?6:0}px"><i class="c-a" style="width:${n?i.a/n*100:0}%"></i><i class="c-t" style="width:${n?i.t/n*100:0}%"></i><i class="c-c" style="width:${n?i.c/n*100:0}%"></i></span><b>${n}</b></button>`}).join('')}
+  </div>`;
+}
+function grupo(skip,keys,fn){return keys.map(k=>{const l=filtradas(skip).filter(r=>fn(r)===k);return {k,a:l.filter(r=>r.st==='A').length,t:l.filter(r=>r.st==='T').length,c:l.filter(r=>r.st==='C').length}}).filter(x=>x.a+x.t+x.c>0)}
+function vPainel(){
+  const L=filtradas();
+  const st=stats(L), rec=st.filter(recorrente);
+  const atras=L.filter(r=>r.st!=='C'&&r.prazo<HOJE).length;
+  const semFin=L.filter(r=>r.st==='T').length;
+  const emRec=L.filter(r=>rec.some(x=>x.tipo===r.tipo)).length;
+  const meses=[];const d0=new Date(HOJE+'T12:00:00');
+  for(let i=11;i>=0;i--){const d=new Date(d0.getFullYear(),d0.getMonth()-i,1,12);const k=d.toISOString().slice(0,7);meses.push({k,n:filtradas().filter(r=>r.data.startsWith(k)).length,l:d.toLocaleDateString('pt-BR',{month:'short'}).replace('.','')})}
+  const mm=Math.max(1,...meses.map(m=>m.n));
+  $('#body').innerHTML=filtrosHtml(false)+`<div class="kpis">
+   <div class="kpi"><small>Total de RNCs</small><div class="n">${L.length}</div><small>no período e filtros</small></div>
+   <div class="kpi"><small>Abertas</small><div class="n">${L.filter(r=>r.st==='A').length}</div><small>${atras?`<b style="color:var(--bad)">${atras} atrasada(s) no total</b>`:'nenhuma atrasada'}</small></div>
+   <div class="kpi"><small>Sem finalização</small><div class="n">${semFin}</div><small>em tratamento</small></div>
+   <div class="kpi"><small>Fechadas</small><div class="n">${L.filter(r=>r.st==='C').length}</div><small>concluídas</small></div>
+   <button class="kpi ${rec.length?'alert':''}" id="krec" style="text-align:left;cursor:pointer;font:inherit"><small>Itens recorrentes (${F.lim}+)</small><div class="n">${rec.length}</div><small>${L.length?Math.round(emRec/L.length*100):0}% das RNCs · ver</small></button>
+   <div class="kpi"><small>Ações que não resolveram</small><div class="n">${L.filter(r=>eficacia(r).reinc).length}</div><small>falha reincidiu</small></div>
+  </div>
+  <div class="cols">${barras('Por categoria',grupo('cat',CATS,r=>tipo(r.tipo).cat),'cat')}${barras('Por projeto e setor',grupo('setor',SETORES,r=>r.setor),'setor')}
+  ${barras('Por disciplina',grupo('disc',[...new Set(Object.values(DISC))],r=>r.disc),'disc')}${barras('Por origem',grupo('origem',ORIGENS,r=>r.origem),'origem')}</div>
+  <div class="card" style="margin-top:14px"><b>RNCs por mês</b><div class="months">${meses.map(m=>`<div><b>${m.n||''}</b><i style="height:${m.n/mm*80}px"></i>${m.l}</div>`).join('')}</div></div>
+  <p class="note">Clique numa barra para filtrar por categoria, projeto/setor, disciplina ou origem.</p>`;
+  ligaFiltros();
+  $('#krec').onclick=()=>go('rec');
+  ['cat','setor','disc','origem'].forEach(c=>$('#body').querySelectorAll('[data-'+c+']').forEach(b=>b.onclick=()=>{F[c]=F[c]===b.dataset[c]?'':b.dataset[c];render()}));
+}
+function vRec(){
+  const L=filtradas(), st=stats(L);
+  const cor=n=>n?`background:rgba(13,12,132,${Math.min(.85,.18+n*.17)});color:#fff`:'';
+  const dots=s=>{const ms=[];const d0=new Date(HOJE+'T12:00:00');for(let i=11;i>=0;i--){const d=new Date(d0.getFullYear(),d0.getMonth()-i,1,12);ms.push(d.toISOString().slice(0,7))}return `<span class="dots" title="últimos 12 meses">${ms.map(m=>`<i class="${s.itens.some(r=>r.data.startsWith(m))?'on':''}"></i>`).join('')}</span>`};
+  const selS=F.sel&&st.find(s=>s.tipo===F.sel);
+  $('#body').innerHTML=`<div class="why"><b>O que este painel responde:</b> o mesmo tipo de falha está acontecendo em vários projetos e setores? Aqui a recorrência é vista na <b>empresa toda</b>, não só em cada setor, e mostra se a ação corretiva funcionou.</div>`+filtrosHtml(true)+
+  `<h3 class="s">Ranking de falhas (${L.length} RNCs no período)</h3>
+  <table><thead><tr><th>Tipo de falha</th><th>Categoria</th><th>Ocorrências</th><th>Setores</th><th>Últimos 12 meses</th><th>Ações que falharam</th></tr></thead><tbody>
+  ${st.map(s=>{const t=tipo(s.tipo);const falhas=s.itens.filter(r=>eficacia(r).reinc).length;return `<tr class="click" data-t="${s.tipo}"><td><b>${esc(t.nome)}</b> ${recorrente(s)?'<span class="pill p-rec">recorrente</span>':''}</td><td>${esc(t.cat)}</td><td><b>${s.n}</b></td><td>${s.setores.size}</td><td>${dots(s)}</td><td>${falhas?`<span class="pill p-a">${falhas}</span>`:'—'}</td></tr>`}).join('')}</tbody></table>
+  <h3 class="s">Mapa: tipo de falha × projeto/setor</h3><div class="heat"><table><thead><tr><th>Tipo de falha</th>${SETORES.map(s=>`<th style="text-align:center">${esc(s.replace('Projeto ','P. '))}</th>`).join('')}<th style="text-align:center">Total</th></tr></thead><tbody>
+  ${st.map(s=>`<tr><td>${esc(tipo(s.tipo).nome)}</td>${SETORES.map(se=>{const n=s.itens.filter(r=>r.setor===se).length;return `<td class="h ${n?'':'h0'}" style="${cor(n)}" data-t="${s.tipo}">${n||'·'}</td>`}).join('')}<td class="h" style="background:var(--soft)">${s.n}</td></tr>`).join('')}</tbody></table></div>
+  <p class="note">Cor mais forte = mais ocorrências. Uma linha com várias células coloridas é uma falha <b>sistêmica</b>: o problema não é de um setor só.</p>
+  <div id="det">${selS?detRec(selS):'<p class="sub">Clique numa linha ou numa célula para ver a linha do tempo da falha.</p>'}</div>`;
+  ligaFiltros();
+  $('#body').querySelectorAll('[data-t]').forEach(e=>e.onclick=()=>{F.sel=e.dataset.t;vRec();document.getElementById('det').scrollIntoView({behavior:'smooth',block:'start'})});
+  const b=$('#corp');if(b)b.onclick=()=>toast('Ação corporativa registrada (simulação): responsável, prazo e verificação de eficácia em 60 dias');
+}
+function detRec(s){
+  const t=tipo(s.tipo);
+  const L=s.itens.slice().sort((a,b)=>a.data.localeCompare(b.data));
+  return `<div class="card" style="margin-top:12px"><h2 style="font-size:16px">${esc(t.nome)} <span class="pill p-rec">${s.n} ocorrências em ${s.setores.size} setor(es)</span></h2>
+  <p class="sub">Categoria: ${esc(t.cat)} · Causa raiz registrada: ${esc(t.causa)}</p>
+  <div class="tl">${L.map(r=>{const e=eficacia(r);return `<div class="it ${e.reinc?'bad':''}"><b>${r.id}</b> · ${fmtD(r.data)} · ${esc(r.setor)} · ${stPill(r.st)}<br><small>Ação: ${esc(r.acaoImed||'(a definir)')} · Resp.: ${esc(r.resp)}</small>${e.t!=='—'?`<br><span class="pill ${e.c}">${esc(e.t)}</span>`:''}</div>`}).join('')}</div>
+  ${s.setores.size>=2?`<div class="alertbox"><b>Leitura:</b> a falha aparece em <b>${s.setores.size} setores</b> (${[...s.setores].map(esc).join(', ')}). Ações isoladas por setor não resolvem: o ideal é uma <b>ação corporativa</b>.</div>`:''}
+  <div class="bar" style="margin-top:6px"><span class="sub" style="margin:0">Ação sugerida: ${esc(t.acao)}</span><button class="btn g" id="corp">Criar ação corporativa</button></div></div>`;
+}
+const row=(k,v)=>`<tr><td>${k}</td><td>${esc(v||'—')}</td></tr>`;
+function ficha(r){
+  const t=tipo(r.tipo);
+  return `<div class="sec"><b>1. Dados da RNC</b><table><tbody>${row('Nº RNC',r.id)}${row('Data',fmtD(r.data))}${row('Cliente',r.cliente)}${row('Contrato',r.contrato)}${row('Projeto/setor',r.setor)}${row('Disciplina',r.disc)}${row('Origem',r.origem)}${row('Tipo de não conformidade',t.nome)}${row('Categoria',t.cat)}${row('Órgão fiscalizador',r.orgao)}${row('Identificação do item',r.item)}${row('Documentos aplicáveis',r.docs)}${row('Descrição',r.desc)}${row('Serviço interrompido',r.interrompido)}${row('Relatada por',r.relatada)}</tbody></table></div>
+  <div class="sec"><b>2. Ação imediata e análise da fiscalização</b><table><tbody>${row('Ação imediata proposta',r.acaoImed)}${row('Proposta por / data',r.acaoPor?r.acaoPor+' · '+fmtD(r.acaoData):'')}${row('Aprovação da ação',r.aprov?r.aprov+' por '+r.aprovPor+' · '+fmtD(r.aprovData):'')}${row('Observações',r.obs)}${row('Comentários da fiscalização',r.coment?r.coment+' ('+r.comentPor+', '+fmtD(r.comentData)+')':'')}</tbody></table></div>
+  <div class="sec"><b>3. Encerramento</b><table><tbody>${row('Verificação da ação imediata',r.verif)}${row('Relação de relatórios emitidos',r.relatorios)}${row('Análise para ação corretiva',r.analise)}${row('Nº RAC',r.rac)}${row('Ação implementada',r.implementada)}${row('Inspetor responsável',r.inspetor?r.inspetor+' · '+fmtD(r.inspData):'')}${row('Controle da qualidade',r.cq?r.cq+' · '+fmtD(r.cqData):'')}${row('Fiscalização/cliente',r.fisc?r.fisc+' · '+fmtD(r.fiscData):'')}${row('Status',ST[r.st])}</tbody></table></div>`;
+}
+function anexosHtml(r,edit){
+  return `<div class="sec"><b>4. Anexos (${r.anexos.length}) · fotos e documentos</b><div style="padding:10px 12px">
+  ${r.anexos.length?`<div class="att">${r.anexos.map(a=>a.tipo==='img'?`<figure><img src="${a.url}" alt="${esc(a.nome)}"><figcaption>${esc(a.nome)}</figcaption></figure>`:`<figure><div class="doc">📄 ${esc(a.nome)}</div><figcaption>${esc(a.tam||'documento')}</figcaption></figure>`).join('')}</div>`:'<p class="sub" style="margin:0">Nenhum anexo.</p>'}
+  ${edit?`<div class="drop"><b>Anexar fotos e documentos</b><br><input type="file" id="fa" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" style="margin-top:6px"><div class="note">Na demonstração, os arquivos ficam só no seu navegador e não são enviados a lugar nenhum. Fotos entram no relatório em PDF.</div></div>`:''}</div></div>`;
+}
+function lerArquivos(files,alvo,depois){
+  const lista=[...files];let falta=lista.length;if(!falta)return;
+  lista.forEach(f=>{
+    if(f.size>8*1024*1024){toast('Arquivo acima de 8 MB ignorado: '+f.name);if(--falta===0)depois();return}
+    if(f.type.startsWith('image/')){const rd=new FileReader();rd.onload=()=>{alvo.push({nome:f.name,tipo:'img',url:rd.result});if(--falta===0)depois()};rd.readAsDataURL(f)}
+    else{alvo.push({nome:f.name,tipo:'doc',tam:Math.round(f.size/1024)+' KB'});if(--falta===0)depois()}
+  });
+}
+function vLista(){
+  const q=F.q.toLowerCase();
+  const L=filtradas().filter(r=>!q||(r.id+' '+tipo(r.tipo).nome+' '+r.setor+' '+r.resp+' '+r.desc).toLowerCase().includes(q)).sort((a,b)=>b.data.localeCompare(a.data));
+  if(relat){vRelatorio();return}
+  if(detalhe){const r=RNCS.find(x=>x.id===detalhe);const t=tipo(r.tipo);const e=eficacia(r);const s=stats(RNCS).find(x=>x.tipo===r.tipo);
+    $('#body').innerHTML=`<h2>${r.id} · ${esc(t.nome)}</h2><p class="sub">${esc(r.setor)} · ${fmtD(r.data)} · Severidade ${SEV[r.sev]} · ${stPill(r.st)}${e.t!=='—'?` · <span class="pill ${e.c}">${esc(e.t)}</span>`:''}</p>
+    ${s.n>1?`<div class="alertbox">⚠ Este tipo de falha já apareceu <b>${s.n} vezes</b> em <b>${s.setores.size} setor(es)</b> nos últimos 12 meses.</div>`:'<div class="okbox">Primeira ocorrência deste tipo de falha.</div>'}
+    ${ficha(r)}${anexosHtml(r,true)}
+    <div class="bar"><button class="btn o" id="vl">← Voltar à lista</button><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn o" id="vr">Ver recorrência deste tipo</button><button class="btn g" id="pdf">Gerar relatório em PDF</button></div></div>`;
+    $('#vl').onclick=()=>{detalhe=null;render()};$('#vr').onclick=()=>{F.sel=r.tipo;go('rec')};
+    $('#pdf').onclick=()=>{relat=r.id;vLista();window.scrollTo({top:0})};
+    $('#fa').onchange=e=>lerArquivos(e.target.files,r.anexos,()=>{toast('Anexo(s) adicionado(s)');vLista()});
+    return}
+  $('#body').innerHTML=filtrosHtml(false)+`<div class="filters"><input id="fq" placeholder="Buscar por número, falha, setor ou responsável" value="${esc(F.q)}" style="flex:1;min-width:220px"></div>
+  <table><thead><tr><th>Nº</th><th>Data</th><th>Tipo de falha</th><th>Projeto/setor</th><th>Anexos</th><th>Situação</th></tr></thead><tbody>
+  ${L.map(r=>`<tr class="click" data-r="${r.id}"><td>${r.id}</td><td>${fmtD(r.data)}</td><td>${esc(tipo(r.tipo).nome)}</td><td>${esc(r.setor)}</td><td>${r.anexos.length?'📎 '+r.anexos.length:'—'}</td><td>${stPill(r.st)}</td></tr>`).join('')||'<tr><td colspan="6" class="sub">Nenhuma RNC para esses filtros.</td></tr>'}</tbody></table><p class="note">${L.length} RNC(s). Clique para abrir.</p>`;
+  ligaFiltros();
+  const fq=$('#fq');fq.oninput=()=>{F.q=fq.value;const p=fq.selectionStart;vLista();const n=$('#fq');n.focus();n.setSelectionRange(p,p)};
+  $('#body').querySelectorAll('[data-r]').forEach(e=>e.onclick=()=>{detalhe=e.dataset.r;vLista()});
+}
+function vRelatorio(){
+  const r=RNCS.find(x=>x.id===relat);const t=tipo(r.tipo);
+  const cab=(n,tot)=>`<div class="ph"><div><b>EMPRESA EXEMPLO</b><br><span>Sistema de gestão de não conformidades</span></div><div style="text-align:right"><span>Folha ${n} / ${tot}</span><br><span class="stamp">EXEMPLO FICTÍCIO</span></div></div><h4>RELATÓRIO DE NÃO CONFORMIDADE</h4><p style="text-align:center;margin:2px 0 8px;font:11px system-ui,sans-serif;color:#555">${r.id}</p>`;
+  const k=(a,b)=>`<tr><td class="k">${a}</td><td>${esc(b||'—')}</td></tr>`;
+  const imgs=r.anexos.filter(a=>a.tipo==='img'), docs=r.anexos.filter(a=>a.tipo!=='img');
+  const tot=imgs.length?3:2;
+  const foot=`<div class="foot"><span>Procedimento aplicável: PR-000 (exemplo fictício)</span><span>Emitido em ${fmtD(HOJE)} · código de verificação 7C1E-90AB (exemplo)</span></div>`;
+  $('#body').innerHTML=`<h2>Relatório de não conformidade em PDF</h2><p class="sub">Prévia do relatório de <b>${r.id}</b>. Use "Imprimir ou salvar PDF" para gerar o arquivo.</p>
+  <div class="bar" style="margin:0 0 6px"><button class="btn o" id="rv">← Voltar à RNC</button><button class="btn g" id="imp">Imprimir ou salvar PDF</button></div>
+  <div id="rel">
+  <div class="paper">${cab(1,tot)}<table><tbody>${k('Cliente',r.cliente)}${k('Contrato',r.contrato)}${k('Órgão de fiscalização',r.orgao)}${k('Data',fmtD(r.data))}${k('Projeto/setor',r.setor)}${k('Disciplina',r.disc)}${k('Origem',r.origem)}${k('Tipo de não conformidade',t.nome)}${k('Característica do material ou equipamento',t.cat)}${k('Identificação do item não conforme',r.item)}${k('Documentos aplicáveis',r.docs)}${k('Descrição da RNC',r.desc)}${k('Serviço interrompido',r.interrompido)}${k('Não conformidade relatada por',r.relatada)}</tbody></table>${foot}</div>
+  <div class="paper">${cab(2,tot)}<table><tbody>${k('Ação imediata proposta',r.acaoImed)}${k('Proposta por / data',r.acaoPor?r.acaoPor+' · '+fmtD(r.acaoData):'')}${k('Aprovação da ação imediata',r.aprov?r.aprov+' por '+r.aprovPor+' · '+fmtD(r.aprovData):'')}${k('Observações',r.obs)}${k('Comentários da fiscalização',r.coment?r.coment+' ('+r.comentPor+', '+fmtD(r.comentData)+')':'')}${k('Verificação da ação imediata',r.verif)}${k('Relação de relatórios emitidos',r.relatorios)}${k('Análise para ação corretiva',r.analise)}${k('Nº RAC',r.rac)}${k('Ação implementada',r.implementada)}${k('Anexos',docs.length||imgs.length?imgs.length+' foto(s)'+(docs.length?' e '+docs.length+' documento(s): '+docs.map(d=>d.nome).join(', '):''):'nenhum')}${k('Status',ST[r.st])}</tbody></table>
+  <div class="sig"><div>Inspetor responsável<br>${esc(r.inspetor||'')} ${r.inspData?'· '+fmtD(r.inspData):''}</div><div>Controle da qualidade<br>${esc(r.cq||'')} ${r.cqData?'· '+fmtD(r.cqData):''}</div><div>Fiscalização / cliente<br>${esc(r.fisc||'')} ${r.fiscData?'· '+fmtD(r.fiscData):''}</div></div>${foot}</div>
+  ${imgs.length?`<div class="paper">${cab(3,tot)}<table><tbody><tr><td class="k">Registro fotográfico</td><td>${imgs.length} imagem(ns) anexada(s) à ${r.id}</td></tr></tbody></table><div class="fotos">${imgs.slice(0,6).map(a=>`<div><img src="${a.url}" alt=""><p>${esc(a.nome)}</p></div>`).join('')}</div>${foot}</div>`:''}
+  </div>`;
+  $('#rv').onclick=()=>{relat=null;vLista()};
+  $('#imp').onclick=()=>window.print();
+}
+function vNova(){
+  const aviso=id=>{const s=stats(RNCS).find(x=>x.tipo===id);if(!id)return '';return s?`<div class="alertbox">⚠ <b>Falha recorrente na empresa:</b> "${esc(tipo(id).nome)}" já ocorreu <b>${s.n} vez(es)</b> em <b>${s.setores.size} setor(es)</b> (${[...s.setores].map(esc).join(', ')}). Última: ${fmtD(s.itens.slice().sort((a,b)=>b.data.localeCompare(a.data))[0].data)}. Considere tratar a causa raiz de forma corporativa.<br><small>Causa raiz registrada antes: ${esc(tipo(id).causa)}</small></div>`:`<div class="okbox">Primeira ocorrência deste tipo de falha na empresa.</div>`};
+  $('#body').innerHTML=`<h2>Abrir nova RNC</h2><p class="sub">Escolha o tipo de falha do catálogo: o sistema avisa se ela já ocorreu em outros projetos ou setores.</p>
+  <div class="two"><div><label class="f" for="nt">Tipo de falha (catálogo padronizado)</label><select id="nt" style="width:100%"><option value="">Selecione...</option>${TIPOS.map(t=>`<option value="${t.id}">${esc(t.nome)}</option>`).join('')}</select></div>
+  <div><label class="f" for="ns">Projeto ou setor</label><select id="ns" style="width:100%">${SETORES.map(s=>`<option>${esc(s)}</option>`).join('')}</select></div></div>
+  <div id="aviso"></div>
+  <div class="two"><div><label class="f" for="nc">Cliente</label><input id="nc" style="width:100%" value="Cliente Modelo S.A."></div><div><label class="f" for="nk">Contrato</label><input id="nk" style="width:100%" value="CT-200/2026 (exemplo)"></div></div>
+  <div class="two"><div><label class="f" for="no">Origem</label><select id="no" style="width:100%">${ORIGENS.map(s=>`<option>${s}</option>`).join('')}</select></div><div><label class="f" for="ni">Identificação do item não conforme</label><input id="ni" style="width:100%" placeholder="Ex.: Lote 45 (exemplo)"></div></div>
+  <div class="two"><div><label class="f" for="nv">Severidade</label><select id="nv" style="width:100%"><option value="A">Alta</option><option value="M" selected>Média</option><option value="B">Baixa</option></select></div><div><label class="f" for="nj">Serviço interrompido?</label><select id="nj" style="width:100%"><option>Não</option><option>Sim</option></select></div></div>
+  <div class="two"><div><label class="f" for="nr">Responsável</label><select id="nr" style="width:100%">${PESSOAS.map(p=>`<option>${esc(p)}</option>`).join('')}</select></div><div><label class="f" for="nl">Documentos aplicáveis</label><input id="nl" style="width:100%" value="Procedimento de exemplo PR-000"></div></div>
+  <label class="f" for="nd">Descrição da ocorrência</label><textarea id="nd" placeholder="O que aconteceu, onde e quando."></textarea>
+  <div class="drop"><b>Anexar fotos e documentos</b><br><input type="file" id="fa" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" style="margin-top:6px"><div id="alist" class="note">Nenhum arquivo selecionado.</div></div>
+  <div class="bar"><button class="btn o" id="c">Cancelar</button><button class="btn p" id="s">Abrir RNC</button></div>`;
+  $('#nt').onchange=()=>{$('#aviso').innerHTML=aviso($('#nt').value)};
+  pend=[];
+  $('#fa').onchange=e=>lerArquivos(e.target.files,pend,()=>{$('#alist').innerHTML=pend.length+' arquivo(s): '+pend.map(a=>esc(a.nome)).join(', ')});
+  $('#c').onclick=()=>go('painel');
+  $('#s').onclick=()=>{const id=$('#nt').value;if(!id){toast('Escolha o tipo de falha');return}
+    const t=tipo(id);const n=RNCS.length+1;
+    RNCS.push({n,id:'RNC-'+String(n).padStart(4,'0'),tipo:id,setor:$('#ns').value,data:HOJE,sev:$('#nv').value,st:'A',resp:$('#nr').value,prazo:addDays(HOJE,15),
+      cliente:$('#nc').value,contrato:$('#nk').value,disc:DISC[t.cat],origem:$('#no').value,orgao:$('#no').value==='Fiscalização do cliente'?'Fiscalização do cliente':'Qualidade interna',item:$('#ni').value,docs:$('#nl').value,interrompido:$('#nj').value,relatada:'Ana Souza',
+      desc:$('#nd').value.trim()||('Ocorrência de "'+t.nome.toLowerCase()+'".'),causa:'(a investigar)',acaoImed:'',acaoPor:'',acaoData:'',aprov:'',aprovPor:'',aprovData:'',obs:'',coment:'',comentPor:'',comentData:'',verif:'',relatorios:'',analise:'',rac:'',implementada:'',inspetor:'',inspData:'',cq:'',cqData:'',fisc:'',fiscData:'',anexos:pend.slice()});
+    toast('RNC aberta com '+pend.length+' anexo(s). Veja a ficha e o relatório em PDF na lista.');F.q='';detalhe='RNC-'+String(n).padStart(4,'0');tela='lista';render()};
+}
+render();
+</script>
+</body>
+</html>

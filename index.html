@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MBecue | Dados e automação</title>
+<meta name="description" content="Consultoria em automação de processos, painéis de BI e gestão de projetos, e soluções próprias com dados e IA.">
+<style>
+:root{
+  --bg:#f6f6fb; --surface:#ffffff; --ink:#0c0b45; --muted:#58587a; --line:#e2e2ef;
+  --brand:#0d0c84; --brand-ink:#ffffff; --accent:#0d0c84; --gold:#c88a1e; --gold-soft:#f2c562; --soft:#ececfa; --warn:#fff4d6; --warn-ink:#7a5b00;
+  --hero-a:#0a0a5a; --hero-b:#0d0c84; --radius:14px; --shadow:0 1px 2px rgba(12,11,69,.06),0 8px 24px rgba(12,11,69,.07);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#08083a; --surface:#10104f; --ink:#ececff; --muted:#a7a7cf; --line:#25257a;
+    --brand:#f2c562; --brand-ink:#1a1400; --accent:#f2c562; --gold:#f2c562; --soft:#1a1a63; --warn:#3a2f10; --warn-ink:#f3d98a;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#08083a; --surface:#10104f; --ink:#ececff; --muted:#a7a7cf; --line:#25257a;
+  --brand:#f2c562; --brand-ink:#1a1400; --accent:#f2c562; --gold:#f2c562; --soft:#1a1a63; --warn:#3a2f10; --warn-ink:#f3d98a; --shadow:none;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+header.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:6px 16px;flex-wrap:wrap;min-height:60px;padding-top:8px;padding-bottom:8px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.02em;font-size:20px;color:var(--ink);text-decoration:none}
+.logo img{width:42px;height:42px;border-radius:50%}
+.logo span{color:var(--gold)}
+nav{display:flex;gap:4px 16px;flex-wrap:wrap}
+img,svg{max-width:100%}
+.card,.chip,.tag{overflow-wrap:anywhere}
+nav a{color:var(--muted);text-decoration:none;font-size:15px}
+nav a:hover{color:var(--ink)}
+.herobg{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff}
+.herobg .lead{color:#d9d9f5}
+.herobg .eyebrow{background:rgba(242,197,98,.16);color:#f2c562}
+.herobg .btn.primary{background:#f2c562;border-color:#f2c562;color:#1a1400}
+.herobg .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.4)}
+.hero{padding:72px 0 64px;display:grid;gap:32px;align-items:center}
+@media(min-width:860px){.hero{grid-template-columns:1fr 1.25fr}.hero-art{order:-1}}
+.hero-art{width:100%;height:auto;max-width:340px;justify-self:center;border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,.35);display:block}
+.eyebrow{display:inline-block;background:var(--soft);color:var(--brand);font-weight:600;font-size:13px;padding:4px 12px;border-radius:99px;margin-bottom:16px}
+h1{font-size:clamp(32px,6vw,54px);line-height:1.08;letter-spacing:-.03em;margin:0 0 16px;max-width:18ch}
+.lead{font-size:clamp(17px,2.4vw,20px);color:var(--muted);max-width:60ch;margin:0 0 28px}
+.btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-block;padding:12px 20px;border-radius:10px;font-weight:600;text-decoration:none;border:1px solid var(--line)}
+.btn.primary{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.btn.ghost{background:var(--surface);color:var(--ink)}
+section{padding:56px 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(24px,4vw,32px);letter-spacing:-.02em;margin:0 0 8px}
+.sub{color:var(--muted);margin:0 0 28px;max-width:62ch}
+.grid{display:grid;gap:16px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.card h3{margin:0 0 6px;font-size:18px;letter-spacing:-.01em}
+.card p{margin:0 0 12px;color:var(--muted);font-size:15px}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 10px;border-radius:99px;background:var(--soft);color:var(--brand);margin:0 6px 6px 0}
+.tag.idea{background:transparent;border:1px dashed var(--line);color:var(--muted)}
+.benefit{font-size:14px;color:var(--ink);border-top:1px solid var(--line);padding-top:10px;margin-top:6px}
+.benefit b{color:var(--gold)}
+.proj .for{font-size:13px;color:var(--muted);margin-bottom:8px}
+.note{font-size:13px;color:var(--muted);margin-top:16px}
+.about{display:grid;gap:28px;grid-template-columns:1fr}
+@media(min-width:760px){.about{grid-template-columns:1.4fr 1fr}}
+.photo{width:100%;max-width:280px;aspect-ratio:1;object-fit:cover;border-radius:50%;border:4px solid var(--gold);margin:0 0 18px}
+.facts{list-style:none;padding:0;margin:0}
+.facts li{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.facts li:last-child{border:0}
+.facts b{min-width:104px;color:var(--muted);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.chip{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:13px;color:var(--muted)}
+.contact{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:28px;text-align:center}
+.contact p{color:var(--muted);margin:0 0 18px}
+.calc{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:800px){.calc{grid-template-columns:1.1fr 1fr}}
+.calc label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+.calc input,.calc select{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 10px}
+.calc .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.result{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;border-radius:var(--radius);padding:22px}
+.result .cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.result .cbox{background:rgba(255,255,255,.08);border-radius:10px;padding:12px}
+.result .cbox span{display:block;font-size:12px;color:#d9d9f5}
+.result .cbox b{display:block;font-size:26px;letter-spacing:-.02em;margin:2px 0 6px}
+.result .cbox small{color:#d9d9f5;font-size:12px}
+.result .bar{display:block;height:8px;background:rgba(255,255,255,.18);border-radius:99px;overflow:hidden}
+.result .bar u{display:block;height:100%;background:#fff;border-radius:99px;width:0;transition:width .3s}
+.result .bar u.gold{background:var(--gold-soft)}
+.result .save{border-top:1px solid rgba(255,255,255,.2);padding-top:12px}
+.result .save span{font-size:14px;color:#d9d9f5}
+.result .big{font-size:clamp(34px,6vw,48px);font-weight:800;color:var(--gold-soft);letter-spacing:-.02em;line-height:1.1}
+.result .save small{color:#d9d9f5}
+.result .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;border-top:1px solid rgba(255,255,255,.2);padding-top:12px;margin-top:12px}
+.result .row2 span{font-size:12px;color:#d9d9f5}
+.result .row2 b{display:block;font-size:20px}
+.result .disc{margin:14px 0 0;font-size:12px;color:#d9d9f5}
+footer{padding:32px 0;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+.row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+button.theme{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit;font-size:13px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap bar">
+    <a class="logo" href="#inicio"><img src="assets/logo.png" alt="Logotipo MBecue"> <span>MBecue</span></a>
+    <nav aria-label="Principal">
+      <a href="#fazemos">O que faço</a>
+      <a href="#portfolio">Portfólio</a>
+      <a href="#calculadora">Calculadora</a>
+      <a href="#ideias">Ideias</a>
+      <a href="#sobre">Sobre</a>
+      <a href="#contato">Contato</a>
+    </nav>
+  </div>
+</header>
+
+<main id="inicio">
+  <div class="herobg"><div class="wrap hero">
+    <div>
+    <span class="eyebrow">Dados, automação e IA aplicada</span>
+    <h1>Do processo manual ao fluxo que se resolve sozinho.</h1>
+    <p class="lead">Consultoria em automação de processos, painéis de BI e gestão de projetos, e soluções próprias que organizam dados soltos em sistemas confiáveis, escaláveis e reutilizáveis.</p>
+    <div class="btns">
+      <a class="btn primary" href="#portfolio">Ver soluções</a>
+      <a class="btn ghost" href="#contato">Falar comigo</a>
+    </div>
+    </div>
+    <img class="hero-art" src="assets/caricatura.jpg" alt="Ilustração de Magally Bécue cercada de painéis, automação, banco de dados e inteligência artificial" width="1024" height="1536">
+  </div></div>
+
+  <section id="fazemos">
+    <div class="wrap">
+      <h2>O que faço</h2>
+      <p class="sub">Parto do problema operacional, não da ferramenta. Cada entrega nasce de um processo mapeado e termina em algo que a equipe usa todo dia.</p>
+      <div class="grid g3">
+        <div class="card"><h3>Automação de processos</h3><p>Mapeio o trabalho manual e transformo em fluxos automáticos, com aplicativos para coleta e padronização de dados.</p><span class="tag">Power Apps</span><span class="tag">Power Automate</span><span class="tag">N8N</span><span class="tag">Python</span><span class="tag">VBA</span></div>
+        <div class="card"><h3>Painéis e indicadores</h3><p>Conecto várias fontes e entrego indicadores que a gestão realmente usa para decidir, com um número só e uma regra só.</p><span class="tag">Power BI</span><span class="tag">SQL</span><span class="tag">Excel avançado</span></div>
+        <div class="card"><h3>Dados e busca inteligente</h3><p>Estruturo bases grandes, elimino duplicidades e padronizo descrições com busca por similaridade e aprendizado por feedback.</p><span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">PostgreSQL</span><span class="tag">Embeddings</span></div>
+        <div class="card"><h3>Gestão de projetos (PMO)</h3><p>Escopo, prazo, custo e qualidade com padronização e rastreabilidade, para que a automação se sustente na rotina.</p><span class="tag">PMP</span><span class="tag">Planejamento</span><span class="tag">Custos</span></div>
+        <div class="card"><h3>Visão financeira (FP&amp;A)</h3><p>Análise de resultado, orçamento e projeção para apoiar a decisão, ligando o número ao processo que o gera.</p><span class="tag">Orçamento</span><span class="tag">Análise de resultado</span><span class="tag">Projeção</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="portfolio">
+    <div class="wrap">
+      <h2>Portfólio</h2>
+      <p class="sub">Soluções que desenvolvi, mostradas com dados fictícios. Clientes e empregadores não são identificados.</p>
+      <div class="grid g3">
+        <article class="card proj">
+          <span class="tag">Demonstração fictícia</span>
+          <h3>CupomBot</h3>
+          <div class="for">Para pessoas e pequenos negócios</div>
+          <p>Uma foto do cupom fiscal vira lançamento organizado: itens, categorias, forma de pagamento e quantidades por produto, com painel de fluxo de caixa.</p>
+          <div class="benefit"><b>Benefício:</b> o controle financeiro deixa de depender de digitação e passa a aprender com cada correção.</div>
+          <div class="chips"><span class="chip">Telegram</span><span class="chip">IA de leitura</span><span class="chip">Planilha e dashboard</span></div>
+        </article>
+        <article class="card proj">
+          <span class="tag">Demonstração fictícia</span>
+          <h3>Reembolso de despesas</h3>
+          <div class="for">Para quem viaja a trabalho</div>
+          <p>Comprovantes guardados por viagem e relatório em Word no padrão da empresa, com conferência automática das regras (tetos, prazos, itens não reembolsáveis).</p>
+          <div class="benefit"><b>Benefício:</b> relatório pronto em minutos, menos erro e menos devolução por regra descumprida.</div>
+          <div class="chips"><span class="chip">Telegram</span><span class="chip">Relatório Word</span><span class="chip">ZIP numerado</span></div>
+        </article>
+        <article class="card proj">
+          <span class="tag">Caso anonimizado</span>
+          <h3>Acompanhamento de medições de contratos</h3>
+          <div class="for">Para grandes operações industriais</div>
+          <p>Aplicativo e painel que substituíram uma planilha manual: o valor medido vem do sistema de gestão, a equipe lança só o que é dela, e um de-para de entregáveis com normalização de texto reduz pendências a uma fila curta.</p>
+          <div class="benefit"><b>Benefício:</b> uma única regra para app, BI e conferência, e fechamento mensal sem retrabalho.</div>
+          <div class="chips"><span class="chip">Power Apps</span><span class="chip">Dataverse</span><span class="chip">Power BI</span><span class="chip">Integração ERP</span></div>
+        </article>
+        <article class="card proj">
+          <span class="tag">Demonstração interativa</span>
+          <h3>Ata de reunião</h3>
+          <div class="for">Para equipes que se reúnem toda semana</div>
+          <p>Registro de reuniões com presença, decisões e pendências com responsável e prazo, resumo com IA e envio por e-mail. Tudo vai para um <b>acervo da empresa</b>, pesquisável, e não para arquivos soltos de cada pessoa.</p>
+          <div class="benefit"><b>Benefício:</b> memória institucional. Num pleito, ou numa auditoria, a empresa localiza o que foi decidido, quem estava presente e quem registrou, mesmo que a pessoa já tenha saído.</div>
+          <div class="chips"><span class="chip">Acervo e busca</span><span class="chip">Dossiê cronológico</span><span class="chip">Power Apps</span><span class="chip">SharePoint</span><span class="chip">IA</span></div>
+          <p style="margin:12px 0 0"><a class="btn primary" style="padding:8px 14px" href="demos/ata-reuniao.html">Experimentar a demonstração</a> <a class="btn ghost" style="padding:8px 14px" href="demos/fluxos.html#ata">Ver como funciona</a></p>
+        </article>
+        <article class="card proj">
+          <span class="tag">Demonstração interativa</span>
+          <h3>Não conformidades (RNC) com painel de recorrência</h3>
+          <div class="for">Para empresas com vários projetos, setores ou unidades</div>
+          <p>Registro de não conformidades com causa raiz, ação corretiva e verificação de eficácia, e um painel por categoria, projeto e setor que mostra se a <b>mesma falha se repete na empresa toda</b>. Ao abrir uma RNC, o sistema avisa se aquela falha já aconteceu em outro lugar.</p>
+          <div class="benefit"><b>Benefício:</b> o problema deixa de ser tratado só no setor onde apareceu; a empresa vê o padrão, ataca a causa e confere se a ação funcionou.</div>
+          <div class="chips"><span class="chip">Painel por categoria e setor</span><span class="chip">Mapa de recorrência</span><span class="chip">Eficácia das ações</span><span class="chip">Power Apps</span></div>
+          <p style="margin:12px 0 0"><a class="btn primary" style="padding:8px 14px" href="demos/rnc.html">Experimentar a demonstração</a> <a class="btn ghost" style="padding:8px 14px" href="demos/fluxos.html#rnc">Ver como funciona</a></p>
+        </article>
+        <article class="card proj">
+          <span class="tag">Caso anonimizado</span>
+          <h3>Gestão de checklists</h3>
+          <div class="for">Para qualquer operação que precisa inspecionar e registrar: obras, indústria, lojas, frotas, serviços</div>
+          <p>Aplicativo que organiza projetos, usuários por perfil, checklists de inspeção configuráveis para cada setor, nota de conformidade, plano de ação com responsável e relatórios emitidos.</p>
+          <div class="benefit"><b>Benefício:</b> inspeção padronizada, pendências com dono e prazo, e histórico pronto para auditoria.</div>
+          <div class="chips"><span class="chip">Power Apps</span><span class="chip">Perfis de acesso</span><span class="chip">Plano de ação</span><span class="chip">Relatórios</span></div>
+          <p style="margin:12px 0 0"><a class="btn ghost" style="padding:8px 14px" href="demos/fluxos.html#chk">Ver como funciona</a></p>
+        </article>
+        <article class="card proj">
+          <span class="tag">Caso anonimizado</span>
+          <h3>Catálogo, estoque e módulo comercial</h3>
+          <div class="for">Para distribuidoras e indústrias</div>
+          <p>Catálogo de produtos e controle de estoque integrados ao ERP em modo leitura, com sincronização agendada, e um módulo comercial com painel, metas do vendedor e alertas (cotação sem retorno, cliente inativo, pedido não faturado).</p>
+          <div class="benefit"><b>Benefício:</b> a equipe de vendas sai das planilhas paralelas e age no momento certo.</div>
+          <div class="chips"><span class="chip">React</span><span class="chip">Node.js</span><span class="chip">SQL Server</span><span class="chip">Jobs agendados</span></div>
+        </article>
+      </div>
+      <p class="note">Veja também os <a href="demos/fluxos.html">fluxogramas</a> de cada solução: quem faz o quê, o que o sistema faz sozinho e onde chega cada aviso (Teams ou e-mail). Também há uma <a href="https://app.xperiun.com/in/httpsappxperiuncomin1707253456675x923798852295196700" rel="noopener">coleção de painéis em Power BI</a>.</p>
+    </div>
+  </section>
+
+
+  <section id="calculadora">
+    <div class="wrap">
+      <h2>Calculadora de economia de tempo</h2>
+      <p class="sub">Escolha uma solução, informe o seu volume e veja uma <b>estimativa</b> de horas e de custo. Os tempos são premissas editáveis: ajuste para a sua realidade.</p>
+      <div class="calc">
+        <div class="card">
+          <label for="c-sol">Solução</label>
+          <select id="c-sol"></select>
+          <label for="c-vol" id="c-vol-l">Volume por mês</label>
+          <input id="c-vol" type="text" inputmode="decimal" autocomplete="off">
+          <div class="two">
+            <div><label for="c-man">Minutos por item HOJE (manual)</label><input id="c-man" type="text" inputmode="decimal" autocomplete="off"></div>
+            <div><label for="c-aut">Minutos por item COM a solução</label><input id="c-aut" type="text" inputmode="decimal" autocomplete="off"></div>
+          </div>
+          <label for="c-custo">Custo de 1 hora da equipe (R$)</label>
+          <input id="c-custo" type="text" inputmode="decimal" autocomplete="off" value="80">
+          <p class="note" id="c-premissa"></p>
+        </div>
+        <div class="result" aria-live="polite">
+          <div class="cmp">
+            <div class="cbox"><span>Hoje (manual)</span><b id="r-hoje">0 h</b><i class="bar"><u id="b-hoje"></u></i><small>por mês</small></div>
+            <div class="cbox"><span>Com a solução</span><b id="r-com">0 h</b><i class="bar"><u id="b-com" class="gold"></u></i><small>por mês</small></div>
+          </div>
+          <div class="save"><span>Você economiza</span><div class="big" id="r-horas">0 h</div><small id="r-pct"></small></div>
+          <div class="row2"><div><span>Horas por ano</span><b id="r-ano">0 h</b></div><div><span>Reais por mês</span><b id="r-mes">R$ 0</b></div></div>
+          <div class="row2" style="border-top:0;padding-top:0"><div><span>Reais por ano</span><b id="r-reais">R$ 0</b></div><div><span>&nbsp;</span><b>&nbsp;</b></div></div>
+          <p class="disc">Estimativa baseada em premissas, não é garantia. Os resultados reais variam; podemos medir o seu processo antes de qualquer decisão.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="ideias">
+    <div class="wrap">
+      <h2>O que posso desenvolver</h2>
+      <p class="sub">Ideias, não produtos prontos. Se alguma resolve um problema seu, conversamos.</p>
+      <div class="grid g3">
+        <div class="card"><span class="tag idea">ideia</span><h3>Conciliação e controle financeiro</h3><p>Leitura de comprovantes e extratos, categorias que aprendem e fluxo de caixa para pequenos negócios.</p></div>
+        <div class="card"><span class="tag idea">ideia</span><h3>Cadastro de materiais padronizado</h3><p>Limpeza e padronização de catálogos grandes, com deduplicação e busca inteligente.</p></div>
+        <div class="card"><span class="tag idea">ideia</span><h3>Relatórios de acompanhamento automáticos</h3><p>Medição, custos e avanço consolidados sem montar planilha à mão.</p></div>
+        <div class="card"><span class="tag idea">ideia</span><h3>Bots de coleta de documentos</h3><p>Atendimento e coleta de documentos por mensagem, com conferência de regras.</p></div>
+        <div class="card"><span class="tag idea">ideia</span><h3>Painéis de custos e caixa</h3><p>Indicadores para gestores, ligados às fontes que já existem na empresa.</p></div>
+        <div class="card"><span class="tag idea">ideia</span><h3>Produtos reutilizáveis (SaaS)</h3><p>Transformar uma solução interna em ferramenta que outras empresas usem.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sobre">
+    <div class="wrap" style="text-align:center"><img class="photo" src="assets/foto-perfil.jpg" alt="Magally Bécue" loading="lazy" style="margin:0 auto 28px"></div>
+    <div class="wrap about">
+      <div>
+        <h2>Sobre</h2>
+        <p class="sub" style="margin-bottom:14px">Engenheira eletricista de formação, com mais de 15 anos em planejamento, custos e PMO de obras industriais. Hoje atuo com automação, análise de dados e IA aplicada, unindo a disciplina de projeto ao desenvolvimento de soluções que funcionam no dia a dia. MBA em Análise 360 e, em andamento, MBA em FP&amp;A, pela Xperiun.</p>
+        <p class="sub">Gosto de começar pequeno, com um MVP que a equipe consegue usar, e evoluir com o que o uso mostra.</p>
+        <div class="chips">
+          <span class="chip">Power BI</span><span class="chip">Power Apps</span><span class="chip">Power Automate</span><span class="chip">SQL</span><span class="chip">Python</span><span class="chip">FastAPI</span><span class="chip">N8N</span><span class="chip">Docker</span>
+        </div>
+      </div>
+      <ul class="facts card">
+        <li><b>Formação</b><span>Engenharia elétrica</span></li>
+        <li><b>Certificação</b><span>PMP</span></li>
+        <li><b>MBA</b><span>Análise 360 (concluído)</span></li>
+        <li><b>MBA</b><span>FP&amp;A (em andamento)</span></li>
+        <li><b>Atuação</b><span>Consultoria em dados e automação</span></li>
+        <li><b>Base</b><span>São Paulo, trabalho remoto</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="contato">
+    <div class="wrap">
+      <div class="contact">
+        <h2>Vamos conversar?</h2>
+        <p>Conte o processo que hoje consome mais tempo. Respondo com uma ideia de por onde começar.</p>
+        <div class="btns" style="justify-content:center">
+          <a class="btn primary" href="mailto:magally.becue@mbecue.com.br">magally.becue@mbecue.com.br</a>
+          <a class="btn ghost" href="https://www.linkedin.com/in/magallybecue" rel="noopener">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap row">
+    <span>© MBecue. Todos os direitos reservados.</span>
+    <button class="theme" id="theme" type="button" aria-label="Alternar tema claro e escuro">Tema</button>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var b=document.getElementById('theme'),r=document.documentElement;
+  b.addEventListener('click',function(){
+    var dark=r.getAttribute('data-theme')==='dark'||(!r.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);
+    r.setAttribute('data-theme',dark?'light':'dark');
+  });
+})();
+
+(function(){
+  var SOL=[
+    {n:'Ata de reunião',u:'reuniões por mês',v:8,m:38,a:8,p:'Premissa: ata com presença, pendências, resumo e e-mail aos participantes.'},
+    {n:'Reembolso de despesas',u:'viagens por mês',v:3,m:90,a:12,p:'Premissa: cerca de 8 comprovantes por viagem; relatório e conferência das regras.'},
+    {n:'CupomBot',u:'cupons por mês',v:60,m:4,a:0.3,p:'Premissa: cupom com cerca de 10 itens, digitado em planilha.'},
+    {n:'Gestão de checklists',u:'ciclos de inspeção por mês',v:2,m:180,a:25,p:'Premissa: consolidação manual e cobrança de responsáveis por e-mail.'}
+  ];
+  var $=function(i){return document.getElementById(i)};
+  var sel=$('c-sol');if(!sel)return;
+  function num(id){var t=String($(id).value).trim().replace(/\s/g,'').replace(/\./g,'').replace(',','.');var n=parseFloat(t);return isFinite(n)&&n>0?n:0}
+  function fmt(n,d){return n.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:d==null?1:d})}
+  function txt(id,t){$(id).textContent=t}
+  SOL.forEach(function(x,i){var o=document.createElement('option');o.value=i;o.textContent=x.n;sel.appendChild(o)});
+  function calc(){
+    var v=num('c-vol'),m=num('c-man'),a=num('c-aut'),c=num('c-custo');
+    var hoje=m*v/60, com=a*v/60, eco=Math.max(0,hoje-com), ano=eco*12;
+    txt('r-hoje',fmt(hoje)+' h'); txt('r-com',fmt(com)+' h'); txt('r-horas',fmt(eco)+' h');
+    txt('r-pct',hoje>0?'redução de '+fmt(eco/hoje*100,0)+'% por mês':'');
+    txt('r-ano',fmt(ano)+' h');
+    txt('r-mes',c>0?'R$ '+fmt(eco*c,0):'informe o custo');
+    txt('r-reais',c>0?'R$ '+fmt(ano*c,0):'informe o custo');
+    $('b-hoje').style.width=hoje>0?'100%':'0';
+    $('b-com').style.width=hoje>0?Math.min(100,com/hoje*100)+'%':'0';
+  }
+  function carrega(){var x=SOL[sel.value];$('c-vol').value=String(x.v).replace('.',',');$('c-man').value=String(x.m).replace('.',',');$('c-aut').value=String(x.a).replace('.',',');txt('c-vol-l','Volume: '+x.u);txt('c-premissa',x.p+' Estimativa, ajuste conforme o seu caso.');calc()}
+  sel.addEventListener('change',carrega);
+  ['c-vol','c-man','c-aut','c-custo'].forEach(function(i){['input','change','keyup'].forEach(function(ev){$(i).addEventListener(ev,calc)})});
+  carrega();
+})();
+</script>
+</body>
+</html>

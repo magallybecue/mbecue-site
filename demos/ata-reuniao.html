@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demonstração | Ata de reunião</title>
+<style>
+:root{
+  --bg:#f3f3fa; --surface:#fff; --ink:#0c0b45; --muted:#58587a; --line:#e0e0ef;
+  --brand:#0d0c84; --brand2:#0a0a5a; --gold:#f2c562; --gold-d:#c88a1e; --soft:#ececfa;
+  --ok:#157347; --okbg:#e3f4ea; --warn:#8a5a00; --warnbg:#fff1cf; --bad:#a32035; --badbg:#fde6ea;
+  --radius:12px;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#08083a; --surface:#10104f; --ink:#ececff; --muted:#a7a7cf; --line:#25257a; --soft:#1a1a63;
+  --okbg:#10361f; --warnbg:#3a2f10; --badbg:#47121d; --ok:#7ddba0; --warn:#f3d98a; --bad:#ff9fb0;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.demo{background:var(--gold);color:#1a1400;text-align:center;font-size:13px;padding:6px 12px;font-weight:600}
+.app{max-width:1040px;margin:12px auto;padding:0 12px}
+.shell{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 8px 28px rgba(12,11,69,.12)}
+.top{background:var(--brand);color:#fff;display:flex;align-items:center;gap:12px;padding:10px 16px;font-size:13px}
+.hdr{background:linear-gradient(135deg,var(--brand2),var(--brand));color:#fff;display:flex;align-items:center;gap:12px;padding:12px 16px}
+.hdr h1{font-size:17px;margin:0;font-weight:700;flex:1}
+.hdr .back{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:16px}
+.steps{display:flex;gap:4px;padding:8px 12px;background:var(--soft);overflow-x:auto}
+.steps button{border:0;background:transparent;color:var(--muted);padding:7px 12px;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;white-space:nowrap}
+.steps button.on{background:var(--brand);color:#fff;font-weight:600}
+.body{padding:18px;min-height:420px}
+h2{margin:0 0 4px;font-size:18px}
+.sub{color:var(--muted);margin:0 0 16px;font-size:14px}
+.grid{display:grid;gap:14px;grid-template-columns:minmax(0,320px) minmax(0,1fr)}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+.kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:16px}
+.kpi{border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;background:var(--surface);color:var(--ink)}
+.kpi .n{font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.kpi small{color:var(--muted)}
+.kpi.alert{border-color:var(--gold-d);box-shadow:0 0 0 2px var(--gold)}
+.kpi.alert .n{color:var(--gold-d)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:13px}
+.cal span.h{color:var(--muted);font-size:11px}
+.cal button{border:0;background:transparent;color:var(--ink);padding:7px 0;border-radius:8px;cursor:pointer;font:inherit}
+.cal button.has{font-weight:700;background:var(--soft)}
+.cal button.sel{background:var(--brand);color:#fff}
+.mt{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:pointer;background:var(--surface);width:100%;text-align:left;font:inherit;color:inherit}
+.mt:hover{border-color:var(--brand)}
+.mt.sel{border-color:var(--gold-d);box-shadow:0 0 0 2px var(--gold)}
+.mt time{font-weight:700;color:var(--brand);min-width:46px}
+.mt small{display:block;color:var(--muted)}
+.folders{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.folder{border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;background:var(--surface);text-align:left;font:inherit;color:inherit}
+.folder.sel{border-color:var(--gold-d);box-shadow:0 0 0 2px var(--gold)}
+.folder .ico{font-size:22px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--muted);font-weight:600;font-size:12px;border-bottom:1px solid var(--line);padding:6px 8px}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+select,input,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 9px;max-width:100%}
+textarea{width:100%;min-height:150px;resize:vertical}
+label.f{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600}
+.p-on{background:var(--okbg);color:var(--ok)} .p-pr{background:var(--soft);color:var(--brand)} .p-no{background:var(--badbg);color:var(--bad)}
+@media (prefers-color-scheme: dark){.p-pr{color:var(--gold)}}
+.btn{border:0;border-radius:10px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer}
+.btn.p{background:var(--brand);color:#fff} .btn.g{background:var(--gold);color:#1a1400} .btn.o{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn.s{padding:4px 10px;font-size:13px}
+.bar{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap}
+.note{font-size:12px;color:var(--muted);margin-top:10px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--brand);color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:20}
+.toast.on{opacity:1}
+.ex{display:inline-block;background:var(--warnbg);color:var(--warn);font-size:11px;font-weight:700;padding:1px 8px;border-radius:99px;margin-left:6px}
+.res{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:var(--surface)}
+.res h3{margin:0 0 2px;font-size:15px}
+.res small{color:var(--muted)}
+.res ul{margin:6px 0 0;padding-left:18px}
+mark{background:var(--gold);color:#1a1400;border-radius:3px;padding:0 2px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.filters input{flex:2;min-width:200px}
+.dossie{border:1px dashed var(--gold-d);border-radius:10px;padding:14px;background:var(--bg);white-space:pre-wrap;font-size:13px;margin-top:12px}
+.why{background:var(--soft);border-radius:10px;padding:12px 14px;font-size:14px;margin-bottom:14px}
+.checks{display:grid;gap:6px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));margin-top:6px}
+.checks label{display:flex;gap:8px;align-items:center;font-size:14px}
+.mailbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.mailbox .mh{background:var(--soft);padding:10px 14px;font-size:13px;color:var(--muted)}
+.mailbox .mh b{color:var(--ink)}
+.mailbox .mb{padding:14px;font-size:14px}
+.attach{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:6px 10px;margin-top:8px;font-size:13px;background:var(--surface)}
+.paper{background:#fff;color:#111;max-width:760px;margin:0 auto;padding:34px 38px;border:1px solid #d9d9e6;box-shadow:0 6px 20px rgba(12,11,69,.15);font:13px/1.45 Georgia,"Times New Roman",serif}
+.paper .ph{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #0d0c84;padding-bottom:10px;margin-bottom:14px}
+.paper .ph b{font:700 15px system-ui,sans-serif;color:#0d0c84}
+.paper .ph span{font:12px system-ui,sans-serif;color:#555}
+.paper h4{margin:0 0 4px;font:700 20px Georgia,serif;color:#0d0c84}
+.paper h5{margin:16px 0 6px;font:700 12px system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#0d0c84;border-bottom:1px solid #d9d9e6;padding-bottom:3px}
+.paper table{font-size:12px;color:#111}
+.paper th{color:#555;border-bottom:1px solid #bbb}
+.paper td{border-bottom:1px solid #e4e4ee}
+.paper .meta td{border:0;padding:2px 8px 2px 0}
+.paper .foot{margin-top:22px;border-top:1px solid #bbb;padding-top:8px;font:11px system-ui,sans-serif;color:#555}
+.paper pre{white-space:pre-wrap;font:12.5px/1.5 Georgia,serif;margin:0}
+.stamp{display:inline-block;border:2px solid #c88a1e;color:#8a5a00;padding:2px 10px;border-radius:6px;font:700 11px system-ui,sans-serif;transform:rotate(-3deg)}
+@media print{
+  body *{visibility:hidden}
+  .paper,.paper *{visibility:visible}
+  .paper{position:absolute;left:0;top:0;width:100%;box-shadow:none;border:0;margin:0}
+}
+</style>
+</head>
+<body>
+<div class="demo">DEMONSTRAÇÃO com dados fictícios: nomes, e-mails e reuniões são inventados. Nada é enviado de verdade.</div>
+<div class="app">
+ <div class="shell">
+  <div class="top"><span>⠿</span><b>Ata de Reunião</b><span style="opacity:.7">| Empresa Exemplo</span></div>
+  <div class="hdr"><button class="back" id="back" aria-label="Voltar">←</button><h1 id="title">Início</h1><span style="font-size:13px;opacity:.85">Ana Souza</span></div>
+  <div class="steps" id="steps"></div>
+  <div class="body" id="body"></div>
+ </div>
+ <p class="note">Esta página reproduz o fluxo de um aplicativo real (Power Apps) com as cores da MBecue e dados de exemplo, para demonstração.</p>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const ME='Ana Souza', ME_EMAIL='ana.souza@exemplo.com';
+const HOJE='2026-10-14';
+const PESSOAS={
+  'ana.souza@exemplo.com':'Ana Souza','bruno.lima@exemplo.com':'Bruno Lima','carla.mendes@exemplo.com':'Carla Mendes',
+  'diego.rocha@exemplo.com':'Diego Rocha','elisa.prado@exemplo.com':'Elisa Prado','novo.convidado@exemplo.com':''
+};
+const PASTAS=['Projeto Alfa','Projeto Beta','Qualidade','Diretoria'];
+const ST=['Presencial','Online','Não compareceu'];
+const fmtD=iso=>iso.split('-').reverse().join('/');
+let SEQ=142;
+const REUNIOES=[
+  {id:1,data:'2026-10-14',hora:'09:00',nome:'Alinhamento semanal do projeto Alfa',part:['ana.souza@exemplo.com','bruno.lima@exemplo.com','carla.mendes@exemplo.com','diego.rocha@exemplo.com']},
+  {id:2,data:'2026-10-14',hora:'14:30',nome:'Revisão de indicadores de qualidade',part:['ana.souza@exemplo.com','elisa.prado@exemplo.com','novo.convidado@exemplo.com']},
+  {id:3,data:'2026-10-16',hora:'10:00',nome:'Kick-off do projeto Beta',part:['ana.souza@exemplo.com','bruno.lima@exemplo.com','elisa.prado@exemplo.com']}
+];
+const HIST=[
+ {id:101,data:'2025-03-12',proj:'Projeto Alfa',nome:'Alinhamento semanal do projeto Alfa',part:[['Ana Souza','Presencial'],['Bruno Lima','Online'],['Ricardo Alves','Presencial',1]],
+  dec:['Contratante Modelo solicitou antecipar a entrega da etapa 2 para 30/04.','Equipe informou que a antecipação exige 2 pessoas adicionais e depende de aprovação formal de escopo e prazo.'],
+  pend:[{t:'Enviar proposta de replanejamento',r:'Ricardo Alves',d:'2025-03-19',s:'Concluída'}],reg:'Registrada em 12/03/2025 15:10 por Ana Souza',lida:'3 de 3 confirmaram a leitura'},
+ {id:102,data:'2025-04-02',proj:'Projeto Alfa',nome:'Revisão de escopo da etapa 2',part:[['Ana Souza','Online'],['Carla Mendes','Presencial'],['Ricardo Alves','Presencial',1]],
+  dec:['Contratante Modelo alterou o requisito de relatórios sem ajuste de prazo ou de valor.','Ficou registrado que a alteração impacta o cronograma em cerca de 3 semanas.'],
+  pend:[{t:'Formalizar impacto do requisito alterado',r:'Ana Souza',d:'2025-04-09',s:'Concluída'},{t:'Aguardar posicionamento da contratante',r:'Carla Mendes',d:'2025-04-16',s:'Aberta'}],reg:'Registrada em 02/04/2025 11:42 por Carla Mendes',lida:'3 de 3 confirmaram a leitura'},
+ {id:103,data:'2025-05-14',proj:'Qualidade',nome:'Revisão de indicadores de qualidade',part:[['Elisa Prado','Presencial'],['Ana Souza','Online'],['Diego Rocha','Presencial']],
+  dec:['Meta de não conformidades mantida em 2%.','Auditoria interna antecipada para junho.'],pend:[{t:'Preparar auditoria interna',r:'Diego Rocha',d:'2025-06-10',s:'Concluída'}],reg:'Registrada em 14/05/2025 16:05 por Elisa Prado',lida:'3 de 3 confirmaram a leitura'},
+ {id:104,data:'2025-06-18',proj:'Projeto Alfa',nome:'Alinhamento semanal do projeto Alfa',part:[['Ana Souza','Presencial'],['Bruno Lima','Presencial'],['Carla Mendes','Online'],['Ricardo Alves','Não compareceu',1]],
+  dec:['Atraso de 12 dias na etapa 2 atribuído à demora da contratante em aprovar o escopo revisado.','Contratante Modelo foi comunicada por e-mail em 19/06 e não contestou o registro.'],
+  pend:[{t:'Reenviar solicitação de aprovação',r:'Bruno Lima',d:'2025-06-25',s:'Concluída'}],reg:'Registrada em 18/06/2025 10:20 por Ana Souza',lida:'3 de 4 confirmaram a leitura (1 ausente)'},
+ {id:105,data:'2026-09-30',proj:'Projeto Beta',nome:'Planejamento do projeto Beta',part:[['Ana Souza','Presencial'],['Bruno Lima','Presencial'],['Elisa Prado','Online']],
+  dec:['Escopo, marcos e responsáveis aprovados em reunião.','Prazo de entrega: 90 dias a partir do aceite do plano.'],
+  pend:[{t:'Validar plano detalhado com a contratante',r:'Ana Souza',d:'2026-10-09',s:'Aberta'},{t:'Atualizar cronograma no sistema',r:'Ana Souza',d:'2026-10-21',s:'Aberta'},{t:'Entregar plano detalhado',r:'Bruno Lima',d:'2026-10-12',s:'Concluída'}],reg:'Registrada em 30/09/2026 09:30 por Ana Souza',lida:'3 de 3 confirmaram a leitura'},
+ {id:107,data:'2026-08-20',proj:'Diretoria',nome:'Reunião de planejamento trimestral',part:[['Ana Souza','Presencial'],['Elisa Prado','Presencial'],['Bruno Lima','Online']],
+  dec:['Orçamento do trimestre aprovado com reserva de 10% para imprevistos.','Contratação de apoio para o projeto Beta aprovada.'],pend:[{t:'Abrir vaga de apoio para o projeto Beta',r:'Elisa Prado',d:'2026-09-05',s:'Concluída'}],reg:'Registrada em 20/08/2026 17:00 por Ana Souza',lida:'3 de 3 confirmaram a leitura'},
+ {id:106,data:'2026-10-07',proj:'Qualidade',nome:'Revisão de indicadores de qualidade',part:[['Elisa Prado','Presencial'],['Ana Souza','Online'],['Diego Rocha','Presencial']],
+  dec:['Plano de ação para reduzir retrabalho aprovado.','Próxima revisão em 30 dias.'],pend:[{t:'Levantar causas do retrabalho do mês',r:'Ana Souza',d:'2026-10-28',s:'Aberta'},{t:'Montar painel de indicadores',r:'Diego Rocha',d:'2026-10-20',s:'Aberta'}],reg:'Registrada em 07/10/2026 11:00 por Elisa Prado',lida:'3 de 3 confirmaram a leitura'}
+];
+const S={tela:'inicio',dia:'2026-10-14',reun:null,pasta:null,part:{},pend:[],resumo:'',final:false,atual:null};
+const TABS=[['inicio','Início'],['agenda','Reunião'],['pasta','Pasta'],['part','Participantes'],['pend','Pendências'],['resumo','Resumo'],['fin','Finalizar'],['acervo','Acervo']];
+const ORDEM=['inicio','agenda','pasta','part','pend','resumo','fin','acervo'];
+const TITULOS={inicio:'Início',agenda:'Calendário de reuniões',pasta:'Pasta da ata',part:'Reunião: Participantes',pend:'Reunião: Pendências',resumo:'Reunião: Resumo',fin:'Finalizar ata',acervo:'Acervo de atas da empresa',nova:'Nova reunião',minhas:'Minhas pendências'};
+const $=s=>document.querySelector(s);
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200)};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function go(t){
+  if(['pasta','part','pend','resumo','fin'].includes(t)&&!S.reun){toast('Escolha uma reunião primeiro');return}
+  if(['part','pend','resumo','fin'].includes(t)&&!S.pasta){toast('Escolha a pasta da ata');return}
+  S.tela=t;render();window.scrollTo({top:0})}
+function render(){
+  $('#title').textContent=TITULOS[S.tela];
+  $('#steps').innerHTML=TABS.map(([k,n],i)=>`<button class="${k===S.tela?'on':''}" data-k="${k}">${i+1}. ${n}</button>`).join('');
+  $('#steps').querySelectorAll('button').forEach(b=>b.onclick=()=>go(b.dataset.k));
+  ({inicio:vInicio,agenda:vAgenda,pasta:vPasta,part:vPart,pend:vPend,resumo:vResumo,fin:vFin,acervo:vAcervo,nova:vNova,minhas:vMinhas})[S.tela]();
+}
+$('#back').onclick=()=>{const i=ORDEM.indexOf(S.tela);go(i<=0?'inicio':ORDEM[i-1])};
+
+function minhasAbertas(){
+  const l=[];
+  HIST.forEach(a=>a.pend.forEach(p=>{if(p.r===ME&&p.s==='Aberta')l.push({p,ata:a.nome,proj:a.proj})}));
+  return l.sort((x,y)=>x.p.d.localeCompare(y.p.d));
+}
+function vInicio(){
+  const ab=minhasAbertas(), atras=ab.filter(x=>x.p.d<HOJE).length;
+  const hoje=REUNIOES.filter(r=>r.data===HOJE).length;
+  $('#body').innerHTML=`<h2>Olá, Ana</h2><p class="sub">Quarta-feira, 14/10/2026. Veja o que precisa da sua atenção.</p>
+  <div class="kpis">
+   <button class="kpi ${ab.length?'alert':''}" id="k1" style="text-align:left;cursor:pointer;font:inherit"><small>Pendências em aberto no seu nome</small><div class="n">${ab.length}</div><small>${atras?`<b style="color:var(--bad)">${atras} atrasada(s)</b> · `:''}clique para ver</small></button>
+   <div class="kpi"><small>Reuniões hoje</small><div class="n">${hoje}</div><small>no calendário</small></div>
+   <div class="kpi"><small>Atas no acervo da empresa</small><div class="n">${HIST.length}</div><small>pesquisáveis</small></div>
+  </div>
+  <div class="bar" style="margin:0 0 16px"><span class="sub" style="margin:0">Registre uma reunião nova ou continue uma agendada.</span><button class="btn g" id="nova">＋ Criar reunião</button></div>
+  <h2 style="font-size:16px">Próximas reuniões</h2>
+  ${REUNIOES.slice().sort((a,b)=>(a.data+a.hora).localeCompare(b.data+b.hora)).map(r=>`<button class="mt" data-r="${r.id}"><time>${r.hora}</time><span>${esc(r.nome)}<small>${fmtD(r.data)} · ${r.part.length} convidados</small></span></button>`).join('')}`;
+  $('#k1').onclick=()=>go('minhas');
+  $('#nova').onclick=()=>go('nova');
+  $('#body').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>abrirReuniao(+b.dataset.r));
+}
+function vMinhas(){
+  const ab=minhasAbertas();
+  $('#body').innerHTML=`<h2>Pendências em aberto no seu nome</h2><p class="sub">Itens de ação atribuídos a você nas atas da empresa.</p>
+  <table><thead><tr><th>Pendência</th><th>Origem</th><th>Prazo</th><th></th></tr></thead><tbody>
+  ${ab.length?ab.map((x,i)=>`<tr><td>${esc(x.p.t)}</td><td>${esc(x.proj)} · ${esc(x.ata)}</td><td>${fmtD(x.p.d)} ${x.p.d<HOJE?'<span class="pill p-no">atrasada</span>':''}</td><td><button class="btn o s" data-c="${i}">Concluir</button></td></tr>`).join(''):'<tr><td colspan="4" class="sub">Nenhuma pendência em aberto.</td></tr>'}</tbody></table>
+  <div class="bar"><button class="btn o" id="v">← Início</button></div>`;
+  $('#body').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{ab[+b.dataset.c].p.s='Concluída';toast('Pendência concluída');vMinhas()});
+  $('#v').onclick=()=>go('inicio');
+}
+function abrirReuniao(id){S.reun=REUNIOES.find(r=>r.id===id);S.pasta=null;S.part={};S.reun.part.forEach(e=>S.part[e]='Presencial');S.pend=[];S.resumo='';S.final=false;S.atual=null;go('pasta')}
+function vNova(){
+  $('#body').innerHTML=`<h2>Criar reunião</h2><p class="sub">Na demonstração, use datas de outubro de 2026.</p>
+  <label class="f" for="nt">Título da reunião</label><input id="nt" style="width:100%" placeholder="Ex.: Reunião de acompanhamento do projeto Gama">
+  <div style="display:flex;gap:10px;flex-wrap:wrap"><div><label class="f" for="nd">Data</label><input type="date" id="nd" value="2026-10-21" min="2026-10-01" max="2026-10-31"></div><div><label class="f" for="nh">Hora</label><input type="time" id="nh" value="10:00"></div></div>
+  <label class="f">Participantes (catálogo de pessoas)</label>
+  <div class="checks">${Object.entries(PESSOAS).filter(([e,n])=>n).map(([e,n])=>`<label><input type="checkbox" value="${e}" ${e===ME_EMAIL?'checked disabled':''}> ${esc(n)}</label>`).join('')}</div>
+  <label class="f" for="ne">Convidado externo (e-mail, opcional)</label><input id="ne" style="width:100%" placeholder="pessoa@exemplo.com">
+  <div class="bar"><button class="btn o" id="c">Cancelar</button><button class="btn p" id="s">Criar reunião</button></div>`;
+  $('#c').onclick=()=>go('inicio');
+  $('#s').onclick=()=>{const t=$('#nt').value.trim();if(!t){toast('Informe o título');return}
+    const d=$('#nd').value;if(!d||!d.startsWith('2026-10')){toast('Use uma data de outubro de 2026');return}
+    const part=[ME_EMAIL,...[...document.querySelectorAll('.checks input:checked:not(:disabled)')].map(i=>i.value)];
+    const ne=$('#ne').value.trim().toLowerCase();if(ne){if(!/^[^@\s]+@exemplo\.com$/.test(ne)){toast('Na demonstração use um e-mail @exemplo.com');return}if(!part.includes(ne))part.push(ne)}
+    const id=REUNIOES.length+10;REUNIOES.push({id,data:d,hora:$('#nh').value||'10:00',nome:t,part});S.dia=d;toast('Reunião criada. Agora escolha a pasta da ata.');abrirReuniao(id)};
+}
+function vAgenda(){
+  const dias=['SEG','TER','QUA','QUI','SEX','SÁB','DOM'];
+  let cal=dias.map(d=>`<span class="h">${d}</span>`).join('')+'<span></span><span></span><span></span>';
+  for(let d=1;d<=31;d++){const iso='2026-10-'+String(d).padStart(2,'0');const has=REUNIOES.some(r=>r.data===iso);cal+=`<button class="${has?'has':''} ${S.dia===iso?'sel':''}" data-d="${iso}">${d}</button>`}
+  const lista=REUNIOES.filter(r=>r.data===S.dia).sort((a,b)=>a.hora.localeCompare(b.hora));
+  $('#body').innerHTML=`<div class="grid"><div class="card"><b>Outubro de 2026</b><div class="cal" style="margin-top:8px">${cal}</div></div>
+  <div><h2>Reuniões do dia ${fmtD(S.dia)}</h2><p class="sub">Clique na reunião para registrar a ata.</p>
+  ${lista.length?lista.map(r=>`<button class="mt ${S.reun&&S.reun.id===r.id?'sel':''}" data-r="${r.id}"><time>${r.hora}</time><span>${esc(r.nome)}<small>${r.part.length} convidados</small></span></button>`).join(''):'<p class="sub">Sem reuniões neste dia. Os dias em destaque têm reunião.</p>'}
+  <div class="bar" style="justify-content:flex-start"><button class="btn g" id="nova">＋ Criar reunião</button></div></div></div>`;
+  $('#body').querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{S.dia=b.dataset.d;vAgenda()});
+  $('#body').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>abrirReuniao(+b.dataset.r));
+  $('#nova').onclick=()=>go('nova');
+}
+function vPasta(){
+  $('#body').innerHTML=`<h2>${esc(S.reun.nome)}</h2><p class="sub">Escolha a pasta onde a ata será guardada, ou crie uma nova.</p>
+  <div class="folders">${PASTAS.map(p=>`<button class="folder ${S.pasta===p?'sel':''}" data-p="${esc(p)}"><div class="ico">📁</div>${esc(p)}</button>`).join('')}
+  <button class="folder" id="nova"><div class="ico">＋</div>Nova pasta</button></div>
+  <div class="bar"><span></span><button class="btn p" id="next">Continuar →</button></div>`;
+  $('#body').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{S.pasta=b.dataset.p;vPasta()});
+  $('#nova').onclick=()=>{const n=prompt('Nome da nova pasta (demonstração):');if(n&&n.trim()){PASTAS.push(n.trim());S.pasta=n.trim();vPasta()}};
+  $('#next').onclick=()=>go('part');
+}
+function vPart(){
+  const rows=Object.keys(S.part).map(e=>`<tr><td>${PESSOAS[e]?esc(PESSOAS[e]):'<i style="color:var(--bad)">(sem nome: não está no catálogo)</i>'}</td><td>${esc(e)}</td>
+  <td><select data-e="${esc(e)}">${ST.map(s=>`<option ${S.part[e]===s?'selected':''}>${s}</option>`).join('')}</select></td></tr>`).join('');
+  $('#body').innerHTML=`<h2>Participantes</h2><p class="sub">Defina o status de cada pessoa. Quem não está no catálogo aparece sem nome.</p>
+  <table><thead><tr><th>Nome</th><th>E-mail</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>
+  <div class="card" style="margin-top:14px"><b>Adicionar participante</b><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><input id="ne" placeholder="e-mail (exemplo: pessoa@exemplo.com)" style="flex:1;min-width:200px"><select id="ns">${ST.map(s=>`<option>${s}</option>`).join('')}</select><button class="btn o" id="add">Salvar</button></div></div>
+  <div class="bar"><button class="btn o" id="prev">← Voltar</button><button class="btn p" id="next">Continuar →</button></div>`;
+  $('#body').querySelectorAll('select[data-e]').forEach(s=>s.onchange=()=>S.part[s.dataset.e]=s.value);
+  $('#add').onclick=()=>{const e=$('#ne').value.trim().toLowerCase();if(!/^[^@\s]+@exemplo\.com$/.test(e)){toast('Na demonstração use um e-mail @exemplo.com');return}S.part[e]=$('#ns').value;vPart()};
+  $('#prev').onclick=()=>go('pasta');$('#next').onclick=()=>go('pend');
+}
+function vPend(){
+  const dono=Object.keys(S.part).filter(e=>PESSOAS[e]);
+  const rows=S.pend.map((p,i)=>`<tr><td>${esc(p.t)}</td><td>${esc(p.r)}</td><td>${fmtD(p.d)}</td><td><button class="btn o s" data-x="${i}">remover</button></td></tr>`).join('');
+  $('#body').innerHTML=`<h2>Pendências</h2><p class="sub">Itens de ação com responsável e prazo. Aparecem no início de cada responsável.</p>
+  <table><thead><tr><th>Descrição</th><th>Responsável</th><th>Prazo</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="4" class="sub">Nenhuma pendência ainda.</td></tr>'}</tbody></table>
+  <div class="card" style="margin-top:14px"><b>Nova pendência</b><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+  <input id="pt" placeholder="Ex.: Avaliar usabilidade do aplicativo" style="flex:2;min-width:220px"><select id="pr">${dono.map(e=>`<option value="${esc(PESSOAS[e])}">${esc(PESSOAS[e])}</option>`).join('')}</select><input type="date" id="pd" value="2026-10-28"><button class="btn o" id="padd">Adicionar</button></div></div>
+  <div class="bar"><button class="btn o" id="prev">← Voltar</button><button class="btn p" id="next">Continuar →</button></div>`;
+  $('#padd').onclick=()=>{const t=$('#pt').value.trim();if(!t){toast('Descreva a pendência');return}S.pend.push({t,r:$('#pr').value,d:$('#pd').value,s:'Aberta'});vPend()};
+  $('#body').querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{S.pend.splice(+b.dataset.x,1);vPend()});
+  $('#prev').onclick=()=>go('part');$('#next').onclick=()=>go('resumo');
+}
+const EXEMPLO=`Transcrição (exemplo fictício):
+Ana: Vamos revisar o andamento do projeto Alfa. Bruno informou que a etapa de levantamento está concluída. Carla pediu para validar o cronograma da próxima etapa até sexta. Diego sugeriu um teste de usabilidade com três usuários antes do lançamento. Ficou combinado manter a reunião semanal às quartas.`;
+function resumir(t){
+  const f=t.replace(/Transcrição[^:]*:/,'').split(/(?<=[.!?])\s+/).map(s=>s.trim()).filter(s=>s.length>25);
+  return 'Resumo da reunião (gerado por IA, revisado pela autora):\n'+f.slice(0,5).map(s=>'• '+s.replace(/^[A-ZÁÉÍÓÚ][a-zç]+:\s*/,'')).join('\n');
+}
+function vResumo(){
+  $('#body').innerHTML=`<h2>Resumo da reunião</h2><p class="sub">Cole a transcrição da reunião e peça um resumo à IA. Revise o conteúdo antes de finalizar.</p>
+  <textarea id="tx" placeholder="Cole aqui a transcrição, ou escreva os tópicos da reunião.">${esc(S.resumo)}</textarea>
+  <div class="bar"><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn o" id="ex">Inserir exemplo</button><button class="btn g" id="ia">✨ Resumir com IA</button></div><div style="display:flex;gap:8px"><button class="btn o" id="prev">← Voltar</button><button class="btn p" id="next">Continuar →</button></div></div>
+  <p class="note">Na demonstração, o resumo é simulado no navegador (sem enviar texto a nenhum serviço).</p>`;
+  const tx=$('#tx');tx.oninput=()=>S.resumo=tx.value;
+  $('#ex').onclick=()=>{S.resumo=EXEMPLO;vResumo()};
+  $('#ia').onclick=()=>{if(!tx.value.trim()){toast('Cole um texto primeiro');return}S.resumo=resumir(tx.value);vResumo();toast('Resumo gerado (simulado)')};
+  $('#prev').onclick=()=>go('pend');$('#next').onclick=()=>go('fin');
+}
+function nomePdf(){return 'Ata_'+S.reun.data+'_'+S.pasta.replace(/\s+/g,'-')+'.pdf'}
+function folha(num,reg){
+  const part=Object.entries(S.part).map(([e,s])=>`<tr><td>${esc(PESSOAS[e]||'(convidado externo)')}</td><td>${esc(e)}</td><td>${s}</td></tr>`).join('');
+  const pend=S.pend.length?S.pend.map(p=>`<tr><td>${esc(p.t)}</td><td>${esc(p.r)}</td><td>${fmtD(p.d)}</td></tr>`).join(''):'<tr><td colspan="3">Nenhuma pendência registrada.</td></tr>';
+  return `<div class="paper"><div class="ph"><div><b>EMPRESA EXEMPLO</b><br><span>Documento gerado pelo sistema de atas</span></div><div style="text-align:right"><span>Registro ${num}</span><br><span class="stamp">EXEMPLO FICTÍCIO</span></div></div>
+  <h4>Ata de reunião</h4>
+  <table class="meta"><tr><td><b>Reunião:</b></td><td>${esc(S.reun.nome)}</td></tr><tr><td><b>Data e hora:</b></td><td>${fmtD(S.reun.data)} às ${S.reun.hora}</td></tr><tr><td><b>Pasta:</b></td><td>${esc(S.pasta)}</td></tr><tr><td><b>Registrada por:</b></td><td>${ME}</td></tr></table>
+  <h5>Participantes</h5><table><thead><tr><th>Nome</th><th>E-mail</th><th>Presença</th></tr></thead><tbody>${part}</tbody></table>
+  <h5>Resumo e decisões</h5><pre>${esc(S.resumo||'(sem resumo)')}</pre>
+  <h5>Pendências</h5><table><thead><tr><th>Descrição</th><th>Responsável</th><th>Prazo</th></tr></thead><tbody>${pend}</tbody></table>
+  <div class="foot">${esc(reg)} · Código de verificação: 9F3A-21C7 (exemplo) · A leitura pode ser confirmada por cada participante no sistema. Este exemplo é fictício.</div></div>`;
+}
+function vFin(){
+  const num='ATA-2026-'+String(S.atual?S.atual.seq:SEQ).padStart(4,'0');
+  const reg=S.atual?S.atual.reg:'Será registrada em 14/10/2026 por '+ME;
+  const dest=Object.keys(S.part).join(', ');
+  $('#body').innerHTML=`<h2>${S.final?'Ata finalizada e enviada':'Finalizar ata'}</h2><p class="sub">${S.final?'A ata foi guardada no acervo e o e-mail abaixo seria enviado aos participantes, com o PDF anexo.':'Confira o e-mail e o PDF. Ao finalizar, a ata vai para o acervo da empresa e é enviada aos participantes.'}</p>
+  <div class="mailbox"><div class="mh"><b>De:</b> atas@empresa-exemplo.com<br><b>Para:</b> ${esc(dest)}<br><b>Assunto:</b> Ata da reunião "${esc(S.reun.nome)}" (${fmtD(S.reun.data)})</div>
+  <div class="mb">Olá,<br><br>Segue a ata da reunião de ${fmtD(S.reun.data)}. Há <b>${S.pend.length}</b> pendência(s) registrada(s); cada responsável vê a sua no início do sistema. Confirme a leitura no link do sistema.<br><br>Atenciosamente,<br>${ME}<br><div class="attach">📎 ${esc(nomePdf())}</div></div></div>
+  <h2 style="font-size:16px;margin:16px 0 8px">Prévia do PDF anexo</h2>
+  ${folha(num,reg)}
+  <div class="bar"><button class="btn o" id="prev">← Voltar</button><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn o" id="imp">Imprimir ou salvar PDF</button>${S.final?'<span class="pill p-on">Enviada (simulação)</span>':'<button class="btn g" id="fin">Finalizar e enviar</button>'}</div></div>`;
+  $('#prev').onclick=()=>go('resumo');
+  $('#imp').onclick=()=>window.print();
+  const f=$('#fin');if(f)f.onclick=finalizar;
+}
+function finalizar(){
+  const seq=SEQ++;
+  const reg='Registrada em 14/10/2026 '+new Date().toTimeString().slice(0,5)+' por '+ME;
+  const part=Object.entries(S.part).map(([e,s])=>[PESSOAS[e]||e,s]);
+  HIST.push({id:200+seq,data:S.reun.data,proj:S.pasta,nome:S.reun.nome,part,dec:(S.resumo||'(sem resumo)').split('\n').filter(x=>x.trim()).slice(0,4),pend:S.pend.map(p=>({...p})),reg,lida:'0 de '+part.length+' confirmaram a leitura (aguardando)'});
+  S.atual={seq,reg};S.final=true;vFin();toast('Ata enviada e guardada no acervo (simulação)');
+}
+function realce(t,q){ if(!q) return esc(t); const i=t.toLowerCase().indexOf(q.toLowerCase()); if(i<0) return esc(t); return esc(t.slice(0,i))+'<mark>'+esc(t.slice(i,i+q.length))+'</mark>'+esc(t.slice(i+q.length)); }
+let FQ='',FP='',FS='';
+function filtra(){ const q=FQ.trim().toLowerCase();
+  return HIST.filter(a=>(!FP||a.proj===FP)&&(!FS||a.part.some(x=>x[0]===FS))&&(!q||(a.nome+' '+a.dec.join(' ')+' '+a.pend.map(p=>p.t).join(' ')).toLowerCase().includes(q))); }
+function dossie(rs,q){
+  const L=rs.slice().sort((a,b)=>a.data.localeCompare(b.data)).map(a=>
+    fmtD(a.data)+' | '+a.proj+' | '+a.nome+'\n  Presenças: '+a.part.map(x=>x[0]+(x[2]?' (ex-colaborador)':'')+' - '+x[1]).join('; ')+'\n  Registrado: '+a.reg+' | '+a.lida+'\n  Decisões: '+a.dec.join(' ')+'\n').join('\n');
+  return 'DOSSIÊ CRONOLÓGICO (simulação)\nTermo pesquisado: '+(q||'(todos)')+'\nAtas encontradas: '+rs.length+'\n\n'+L;
+}
+function vAcervo(){
+  const nomes=[...new Set(HIST.flatMap(a=>a.part.map(x=>x[0])))];
+  const projs=[...new Set(HIST.map(a=>a.proj))];
+  const rs=filtra().sort((a,b)=>b.data.localeCompare(a.data));
+  $('#body').innerHTML=`<div class="why"><b>Por que um acervo?</b> IAs e o Teams resumem reuniões, mas o resultado fica em arquivos soltos, no OneDrive de cada pessoa. Aqui a <b>empresa</b> guarda tudo num só lugar, com busca, presença, decisões e quem registrou, mesmo depois que a pessoa sai.</div>
+  <div class="folders" style="margin-bottom:14px">
+   <button class="folder ${FP===''?'sel':''}" data-f=""><div class="ico">🗂️</div>Todas as pastas<br><small style="color:var(--muted)">${HIST.length} ata(s)</small></button>
+   ${PASTAS.map(p=>`<button class="folder ${FP===p?'sel':''}" data-f="${esc(p)}"><div class="ico">📁</div>${esc(p)}<br><small style="color:var(--muted)">${HIST.filter(a=>a.proj===p).length} ata(s)</small></button>`).join('')}
+  </div>
+  <p class="sub" style="margin-bottom:8px">${FP?`Acervo › <b>${esc(FP)}</b>`:'Acervo › <b>Todas as pastas</b>'}${FQ?` › busca por “${esc(FQ)}”`:''}</p>
+  <div class="filters"><input id="fq" placeholder="${FP?'Buscar nas atas da pasta '+esc(FP):'Buscar em todas as pastas'} (ex.: prazo, requisito, aprovação)" value="${esc(FQ)}">
+  <select id="fs"><option value="">Qualquer pessoa</option>${nomes.map(x=>`<option ${FS===x?'selected':''}>${esc(x)}</option>`).join('')}</select></div>
+  ${rs.length?rs.map(a=>`<div class="res"><h3>${fmtD(a.data)} · 📁 ${esc(a.proj)} · ${realce(a.nome,FQ)}</h3>
+  <small>${esc(a.reg)} · ${esc(a.lida)}</small>
+  <div style="margin-top:6px">${a.part.map(x=>`<span class="pill ${x[1]==='Não compareceu'?'p-no':x[1]==='Online'?'p-on':'p-pr'}">${esc(x[0])}: ${x[1]}</span>${x[2]?'<span class="ex">ex-colaborador</span>':''} `).join('')}</div>
+  <ul>${a.dec.map(d=>`<li>${realce(d,FQ)}</li>`).join('')}</ul>
+  <ul style="color:var(--muted)">${a.pend.map(p=>`<li>Pendência: ${realce(p.t,FQ)}, ${esc(p.r)}, até ${fmtD(p.d)} (${p.s})</li>`).join('')}</ul></div>`).join(''):'<p class="sub">Nenhuma ata encontrada para esses filtros.</p>'}
+  <div class="bar"><span class="sub" style="margin:0">${rs.length} ata(s) encontrada(s)</span><button class="btn g" id="dos">Gerar dossiê cronológico</button></div>
+  <div id="dosout"></div>
+  <p class="note">Cenário de exemplo: um pleito contra a contratante (ou da contratante contra a empresa). Em vez de depender da memória de quem estava nas reuniões, o histórico e as presenças estão no acervo. Dados fictícios. Atas registradas dão apoio documental; o peso jurídico depende de cada contrato e deve ser avaliado com o jurídico da empresa.</p>`;
+  const fq=$('#fq');fq.oninput=()=>{FQ=fq.value;const pos=fq.selectionStart;vAcervo();const n=$('#fq');n.focus();n.setSelectionRange(pos,pos)};
+  $('#body').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{FP=b.dataset.f;vAcervo()});
+  $('#fs').onchange=e=>{FS=e.target.value;vAcervo()};
+  $('#dos').onclick=()=>{ if(!rs.length){toast('Nada para o dossiê');return} $('#dosout').innerHTML='<div class="dossie">'+esc(dossie(rs,FQ))+'</div>'; };
+}
+render();
+</script>
+</body>
+</html>

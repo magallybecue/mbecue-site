@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Como funcionam | Fluxos das soluções</title>
+<style>
+:root{
+  --bg:#f3f3fa; --surface:#fff; --ink:#0c0b45; --muted:#58587a; --line:#d9d9ec; --soft:#ececfa;
+  --brand:#0d0c84; --brand2:#0a0a5a; --gold:#f2c562; --gold-d:#c88a1e;
+  --l0:#0d0c84; --l1:#c88a1e; --l2:#157347; --l3:#a3255f;
+  --ok:#157347; --okbg:#e3f4ea; --warn:#8a5a00; --warnbg:#fff1cf; --bad:#a32035; --badbg:#fde6ea;
+  --radius:12px;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#08083a; --surface:#10104f; --ink:#ececff; --muted:#a7a7cf; --line:#2c2c86; --soft:#1a1a63;
+  --l0:#8f8fff; --l1:#f2c562; --l2:#7ddba0; --l3:#ff8fc0;
+  --okbg:#10361f; --warnbg:#3a2f10; --badbg:#47121d; --ok:#7ddba0; --warn:#f3d98a; --bad:#ff9fb0;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.demo{background:var(--gold);color:#1a1400;text-align:center;font-size:13px;padding:6px 12px;font-weight:600}
+.app{max-width:1360px;margin:10px auto;padding:0 12px}
+.shell{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 8px 28px rgba(12,11,69,.12)}
+.hdr{background:linear-gradient(135deg,var(--brand2),var(--brand));color:#fff;padding:10px 18px}
+.hdr h1{font-size:17px;margin:0}
+.hdr p{margin:1px 0 0;font-size:12.5px;opacity:.85}
+.tabs{display:flex;gap:4px;padding:6px 10px;background:var(--soft);flex-wrap:wrap}
+.tabs button{border:0;background:transparent;color:var(--muted);padding:7px 12px;border-radius:8px;cursor:pointer;font:inherit;font-size:14px}
+.tabs button.on{background:var(--brand);color:#fff;font-weight:600}
+@media (prefers-color-scheme: dark){.tabs button.on{background:var(--gold);color:#1a1400}}
+.body{padding:12px 16px 16px}
+.intro{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin-bottom:6px}
+.intro p{margin:0;color:var(--muted);font-size:13.5px;max-width:74ch}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:0;border-radius:10px;padding:7px 13px;font:inherit;font-weight:600;cursor:pointer;font-size:13.5px}
+.btn.p{background:var(--brand);color:#fff} .btn.g{background:var(--gold);color:#1a1400} .btn.o{background:transparent;border:1px solid var(--line);color:var(--ink)}
+@media (prefers-color-scheme: dark){.btn.p{background:var(--gold);color:#1a1400}}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:4px 0 6px}
+.legend span::before{content:"";display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px;background:var(--c)}
+.chart{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:0;overflow:hidden}
+svg{display:block;width:100%;height:auto}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.lane-bg{fill:var(--bg)}
+.lane-bg.alt{fill:var(--soft);opacity:.55}
+.lane-name{font-size:12px;font-weight:700;fill:var(--ink)}
+.node{cursor:pointer;outline:none}
+.node rect,.node polygon{fill:var(--surface);stroke:var(--line);stroke-width:1.5;transition:.2s}
+.node .bar{stroke:none}
+.node text{font-size:11.5px;fill:var(--ink)}
+.node .n{font-size:11px;font-weight:800}
+.node:hover rect,.node:hover polygon,.node:focus rect,.node:focus polygon{stroke:var(--gold-d)}
+.node.on rect,.node.on polygon{stroke:var(--gold-d);stroke-width:3;filter:drop-shadow(0 0 6px rgba(242,197,98,.9))}
+.node.done rect,.node.done polygon{stroke:var(--ok)}
+.edge{fill:none;stroke:var(--muted);stroke-width:1.6}
+.edge.back{stroke-dasharray:5 4}
+.edge.on{stroke:var(--gold-d);stroke-width:3}
+.elabel{font-size:11px;font-weight:700;fill:var(--muted);paint-order:stroke;stroke:var(--surface);stroke-width:4px}
+/* lista vertical (telas estreitas) */
+.vlist{padding:10px;display:grid;gap:8px}
+.vstep{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:8px 10px;background:var(--surface);cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
+.vstep.on{border-color:var(--gold-d);box-shadow:0 0 0 2px var(--gold)}
+.vstep.done{border-top-color:var(--ok);border-right-color:var(--ok);border-bottom-color:var(--ok)}
+.vstep .num{font-weight:800;color:var(--c);min-width:20px}
+.vstep small{display:block;color:var(--muted)}
+.detail{display:grid;gap:12px;grid-template-columns:minmax(0,1fr) minmax(0,1fr);margin-top:12px;scroll-margin-bottom:12px}
+@media(max-width:860px){.detail{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;background:var(--surface)}
+.card h2{margin:0 0 4px;font-size:15.5px}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--soft);color:var(--ink);margin-bottom:6px}
+.auto{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--okbg);color:var(--ok);margin-left:6px}
+.step-list{margin:8px 0 0;padding-left:18px;font-size:13px;color:var(--muted)}
+.msg{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface);font-size:13px;margin-top:8px}
+.msg .mh{background:var(--soft);padding:7px 12px;font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.msg .mb{padding:10px 12px}
+.msg label{display:block;font-size:12px;color:var(--muted);margin:7px 0 3px}
+.msg input,.msg select,.msg textarea{width:100%;font:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.msg textarea{min-height:44px;resize:vertical}
+.msg .acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.teams .mh{background:#5b5fc7;color:#fff}
+.mail .mh{background:#0d4f8b;color:#fff}
+.chat .mh{background:#229ed9;color:#fff}
+.hint{font-size:12px;color:var(--muted);margin-top:6px}
+.files{margin:6px 0 0;padding:0;list-style:none;font-size:13px}
+.files li{padding:3px 0}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--brand);color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:20}
+.toast.on{opacity:1}
+.note{font-size:12px;color:var(--muted);margin:8px 0 0}
+</style>
+</head>
+<body>
+<div class="demo">DEMONSTRAÇÃO com dados fictícios. As mensagens são simuladas: nada é enviado de verdade.</div>
+<div class="app">
+ <div class="shell">
+  <div class="hdr"><h1>Como funcionam as soluções</h1><p>Quem faz o quê, o que o sistema faz sozinho e onde chega cada aviso. Clique nas etapas ou reproduza o fluxo.</p></div>
+  <div class="tabs" id="tabs"></div>
+  <div class="body">
+   <div class="intro"><p id="intro"></p><div class="ctrl"><button class="btn g" id="play">▶ Reproduzir</button><button class="btn o" id="prev">←</button><button class="btn o" id="next">Próxima etapa →</button><button class="btn o" id="reset">Recomeçar</button></div></div>
+   <div class="legend" id="legend"></div>
+   <div class="chart" id="chart"></div>
+   <div class="detail" id="detail"><div class="card" id="det"></div><div class="card" id="msgbox"></div></div>
+   <p class="note" id="nota"></p>
+  </div>
+ </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2400)};
+const CORES=['var(--l0)','var(--l1)','var(--l2)','var(--l3)'];
+/* msg: {k:'teams'|'email'|'chat'|'doc', ...}. campos: lista de [rótulo, tipo, valor]. */
+const CAMPOS_RNC=[['Ação imediata proposta','text','Isolar o lote e recolher o item para inspeção'],['Prazo','date','2026-10-27'],['Responsável','select','Bruno Lima|Carla Mendes|Diego Rocha'],['Comentário','area','']];
+const DOC_RNC={k:'doc',titulo:'RELATÓRIO DE NÃO CONFORMIDADE · RNC-0041',linhas:['Folha 1: dados da RNC','Folha 2: ação imediata, análise e assinaturas','Folha 3: registro fotográfico'],link:['rnc.html','Veja a prévia completa na demonstração de RNC']};
+const FLUXOS={
+ rnc:{nome:'RNC com fiscalização',
+  intro:'RNC que envolve o cliente ou a fiscalização: o inspetor abre, o coordenador confere e aprova, o inspetor gera o PDF e envia à fiscalização, por e-mail ou impresso.',
+  lanes:['Inspetor','Sistema (automático)','Coordenador','Fiscalização / cliente'],
+  steps:[
+   {id:'a',lane:0,col:0,t:'Abre a RNC no app',d:'O inspetor escolhe o tipo de falha do catálogo, descreve, anexa fotos e documentos e envia.'},
+   {id:'b',lane:1,col:1,t:'Verifica recorrência e pede conferência',auto:true,d:'O sistema numera a RNC, avisa se a falha já ocorreu em outros projetos ou setores e envia ao coordenador um pedido de conferência com a ficha completa.',msg:{k:'teams',titulo:'Conferir e aprovar RNC-0041',sub:'Projeto Beta · Equipamento sem calibração válida · severidade média',hint:'Ficha completa e fotos no anexo.',campos:[['Comentário','area','']],botoes:['Aprovar','Devolver'],email:'Conferência de RNC-0041'}},
+   {id:'c',lane:2,col:2,t:'Confere a ficha',d:'O coordenador recebe a mensagem no Teams ou por e-mail, revisa os dados e as fotos.',msg:{k:'teams',titulo:'Conferir e aprovar RNC-0041',sub:'Projeto Beta · Equipamento sem calibração válida · severidade média',hint:'Ficha completa e fotos no anexo.',campos:[['Comentário','area','']],botoes:['Aprovar','Devolver'],email:'Conferência de RNC-0041'}},
+   {id:'d',lane:2,col:3,t:'Aprova?',type:'d',d:'Decisão do coordenador: aprovar ou devolver ao inspetor com um comentário.'},
+   {id:'e',lane:1,col:4,t:'Registra a aprovação e avisa o inspetor',auto:true,d:'O sistema grava quem aprovou e quando, e avisa o inspetor de que pode gerar o relatório.'},
+   {id:'f',lane:0,col:5,t:'Gera o relatório em PDF',d:'O inspetor gera o PDF da RNC (dados, ação imediata, assinaturas e registro fotográfico) com um clique.',msg:DOC_RNC},
+   {id:'g',lane:0,col:6,t:'Envia à fiscalização',d:'O inspetor envia o PDF por e-mail ou entrega impresso.'},
+   {id:'h',lane:3,col:7,t:'Analisa e comenta',d:'A fiscalização analisa a ação imediata proposta e devolve o comentário (e-mail ou papel).'},
+   {id:'i',lane:0,col:8,t:'Registra a resposta e conclui',d:'O inspetor registra o comentário no app, implementa a ação e solicita as aprovações finais (qualidade e cliente).'},
+   {id:'j',lane:1,col:9,t:'Atualiza painel e eficácia',auto:true,d:'O sistema atualiza o painel de recorrência, acompanha o prazo e confere, depois, se a falha voltou (eficácia da ação).'}
+  ],
+  edges:[['a','b'],['b','c'],['c','d'],['d','e','Sim'],['e','f'],['f','g'],['g','h'],['h','i'],['i','j'],['d','a','Não: devolve ao inspetor','back']],
+  seq:['a','b','c','d','e','f','g','h','i','j'],
+  nota:'Cenário descrito pela Maga; as etapas podem ser ajustadas ao processo de cada empresa (por exemplo, quem aprova e por qual canal).'},
+ rncint:{nome:'RNC interna (automática)',
+  intro:'RNC interna, sem fiscalização externa: todo o fluxo é automático. O responsável recebe a solicitação de aprovação no Teams ou no e-mail, com campos para preencher, sem abrir o app.',
+  lanes:['Inspetor','Sistema (automático)','Responsável / coordenador'],
+  steps:[
+   {id:'a',lane:0,col:0,t:'Abre a RNC interna',d:'O inspetor registra a ocorrência, escolhe o tipo de falha e anexa fotos. Marca a origem como interna.'},
+   {id:'b',lane:1,col:1,t:'Classifica e envia a solicitação',auto:true,d:'Como a RNC é interna, o sistema segue sozinho: verifica recorrência e envia ao responsável uma solicitação de aprovação com campos para preencher.',msg:{k:'teams',titulo:'Aprovar RNC interna RNC-0041',sub:'Projeto Beta · Equipamento sem calibração válida · severidade média',campos:CAMPOS_RNC,botoes:['Aprovar','Devolver'],email:'Aprovação de RNC-0041'}},
+   {id:'c',lane:2,col:2,t:'Responde no Teams ou e-mail',d:'O responsável preenche a ação imediata, o prazo e o comentário no próprio cartão e aprova ou devolve.',msg:{k:'teams',titulo:'Aprovar RNC interna RNC-0041',sub:'Projeto Beta · Equipamento sem calibração válida · severidade média',campos:CAMPOS_RNC,botoes:['Aprovar','Devolver'],email:'Aprovação de RNC-0041'}},
+   {id:'d',lane:2,col:3,t:'Aprovou?',type:'d',d:'Se devolveu, o inspetor recebe o comentário e ajusta; se aprovou, o fluxo segue sozinho.'},
+   {id:'e',lane:1,col:4,t:'Grava respostas e gera o PDF',auto:true,d:'O sistema grava os campos na RNC, gera o relatório em PDF e guarda no acervo da empresa.',msg:DOC_RNC},
+   {id:'f',lane:1,col:5,t:'Envia cópia e acompanha o prazo',auto:true,d:'O PDF é enviado por e-mail a quem precisa; o sistema lembra o responsável do prazo e registra a conclusão.',msg:{k:'email',de:'rnc@empresa-exemplo.com',assunto:'Documento disponível: RNC-0041',corpo:'O relatório em PDF foi gerado e guardado no acervo da empresa. Cópia em anexo.',anexo:'RNC-0041.pdf · prazo da ação: 27/10/2026'}},
+   {id:'g',lane:1,col:6,t:'Atualiza painel e confere eficácia',auto:true,d:'O painel de recorrência é atualizado. Depois de um período, o sistema confere se a falha voltou.'}
+  ],
+  edges:[['a','b'],['b','c'],['c','d'],['d','e','Sim'],['e','f'],['f','g'],['d','a','Não: devolve ao inspetor','back']],
+  seq:['a','b','c','d','e','f','g'],
+  nota:'Menos passos manuais: o inspetor só abre a RNC; o restante é automático, com rastro de quem aprovou e quando.'},
+ ata:{nome:'Ata de reunião',
+  intro:'Da reunião ao acervo da empresa: a ata é registrada, o PDF é enviado, os participantes confirmam a leitura e as pendências são cobradas automaticamente.',
+  lanes:['Organizador','Sistema (automático)','Participantes'],
+  steps:[
+   {id:'a',lane:0,col:0,t:'Cria a reunião e registra a ata',d:'O organizador escolhe a reunião no calendário e a pasta, marca presença, lança pendências com responsável e prazo e cola a transcrição para o resumo com IA.'},
+   {id:'b',lane:0,col:1,t:'Revisa e finaliza a ata',d:'Revisa o resumo gerado e finaliza.'},
+   {id:'c',lane:1,col:2,t:'Gera PDF, guarda no acervo e envia',auto:true,d:'O sistema gera o PDF, grava no acervo da empresa (pesquisável) e envia por e-mail aos participantes.',msg:{k:'email',de:'atas@empresa-exemplo.com',assunto:'Ata da reunião "Alinhamento semanal do projeto Alfa" (14/10/2026)',corpo:'Segue a ata da reunião. Há 3 pendências registradas; cada responsável vê as suas no início do sistema. Confirme a leitura no link.',anexo:'Ata_2026-10-14_Projeto-Alfa.pdf'}},
+   {id:'d',lane:2,col:3,t:'Confirmam a leitura',d:'Cada participante confirma a leitura no link; o sistema registra quem e quando.'},
+   {id:'e',lane:1,col:4,t:'Cobra as pendências',auto:true,d:'Cada responsável vê as suas pendências na página inicial e recebe lembretes antes do prazo.',msg:{k:'teams',titulo:'Lembrete: pendência vence em 3 dias',sub:'Atualizar cronograma no sistema · Projeto Beta · prazo 21/10/2026',campos:[],botoes:['Marcar como concluída','Pedir mais prazo']}},
+   {id:'f',lane:2,col:5,t:'Concluem as pendências',d:'O responsável marca como concluída; o contador do início diminui.'},
+   {id:'g',lane:1,col:6,t:'Mantém acervo e dossiê',auto:true,d:'A empresa passa a ter o histórico por pasta, com busca e dossiê cronológico, mesmo que pessoas saiam.'}
+  ],
+  edges:[['a','b'],['b','c'],['c','d'],['d','e'],['e','f'],['f','g']],
+  seq:['a','b','c','d','e','f','g'],
+  nota:'Memória institucional: o registro é da empresa, não de arquivos soltos de cada pessoa.'},
+ chk:{nome:'Gestão de checklists',
+  intro:'O inspetor preenche o checklist, o sistema calcula a nota e abre o plano de ação para cada item não conforme, com responsável e prazo, até a aprovação do gestor.',
+  lanes:['Inspetor','Sistema (automático)','Responsável pela ação','Gestor'],
+  steps:[
+   {id:'a',lane:0,col:0,t:'Preenche o checklist',d:'No celular ou no computador, com fotos e observações, por projeto.'},
+   {id:'b',lane:1,col:1,t:'Calcula a nota e abre o plano de ação',auto:true,d:'O sistema calcula a nota de conformidade e cria, para cada item não conforme, uma ação com responsável e prazo.'},
+   {id:'c',lane:1,col:2,t:'Notifica os responsáveis',auto:true,d:'Cada responsável recebe a ação no Teams ou por e-mail.',msg:{k:'teams',titulo:'Nova ação do checklist de inspeção',sub:'Item não conforme: extintor com validade vencida · Projeto Alfa · prazo 20/10/2026',campos:[['Observação','area','']],botoes:['Assumir ação','Reatribuir']}},
+   {id:'d',lane:2,col:3,t:'Trata e anexa a evidência',d:'O responsável registra o que foi feito e anexa foto ou documento.'},
+   {id:'e',lane:3,col:4,t:'Aprova a ação',d:'O gestor confere a evidência e aprova ou devolve.'},
+   {id:'f',lane:1,col:5,t:'Atualiza matriz e relatório',auto:true,d:'A matriz de checklists por projeto e o relatório emitido são atualizados, com o histórico para auditoria.',msg:{k:'doc',titulo:'RELATÓRIO DO CHECKLIST · Projeto Alfa',linhas:['Nota de conformidade e itens não conformes','Plano de ação com responsável, prazo e status','Evidências anexadas e aprovações']}}
+  ],
+  edges:[['a','b'],['b','c'],['c','d'],['d','e'],['e','f']],
+  seq:['a','b','c','d','e','f'],
+  nota:'O checklist é configurável por setor: obras, indústria, lojas, frotas, serviços.'},
+ reemb:{nome:'Reembolso de despesas',
+  intro:'O viajante guarda os comprovantes no Telegram e o sistema confere as regras e monta o relatório em Word, com os comprovantes, para o viajante enviar à empresa.',
+  lanes:['Viajante','Sistema (automático)'],
+  steps:[
+   {id:'a',lane:0,col:0,t:'Cria a viagem',d:'Pelo assistente de botões: destino, datas, pernoite.'},
+   {id:'b',lane:0,col:1,t:'Envia os comprovantes',d:'Foto, PDF ou captura de tela de cada despesa, na hora.'},
+   {id:'c',lane:1,col:2,t:'Confere as regras',auto:true,d:'O sistema aplica o teto por dia, o prazo, a regra de pernoite e avisa sobre álcool ou pagamento em cartão.',msg:{k:'chat',titulo:'Conferência do comprovante 5',linhas:['✅ Jantar dentro do teto diário','⚠️ Nota com bebida alcoólica: item não reembolsável','⏱ Prazo para enviar o relatório: 7 dias']}},
+   {id:'d',lane:0,col:3,t:'Finaliza a viagem',d:'Revisa a conferência e finaliza.'},
+   {id:'e',lane:1,col:4,t:'Monta o relatório e o ZIP',auto:true,d:'Gera o relatório em Word no modelo da empresa, numera os comprovantes e monta o ZIP.',msg:{k:'doc',titulo:'RELATÓRIO DE DESPESAS DE VIAGEM (Word) + ZIP',linhas:['Relatório_Viagem_2026-10.docx (modelo da empresa)','8 comprovantes numerados','Pacote Viagem_2026-10.zip pronto para enviar'],aviso:'O sistema não envia à empresa: o viajante confere e envia.'}},
+   {id:'f',lane:0,col:5,t:'Envia à empresa',d:'O viajante revisa e envia, por e-mail, dentro do prazo. O sistema não envia por ele.'}
+  ],
+  edges:[['a','b'],['b','c'],['c','d'],['d','e'],['e','f']],
+  seq:['a','b','c','d','e','f'],
+  nota:'O envio à empresa fica com o viajante, de propósito: ele confere antes.'}
+};
+const ORDEM=['rnc','rncint','ata','chk','reemb'];
+let cur='rnc',pos=-1,timer=null,modo='';
+const COLW=124,ROWH=92,PADL=96,BW=108,BH=68;
+function nodeXY(s){return {x:PADL+s.col*COLW+(COLW-BW)/2,y:s.lane*ROWH+(ROWH-BH)/2+6}}
+function wrap(t,n){const w=t.split(' ');const L=[];let c='';w.forEach(x=>{if((c+' '+x).trim().length>n){if(c)L.push(c);c=x}else c=(c+' '+x).trim()});if(c)L.push(c);return L}
+function isMobile(){return window.innerWidth<720}
+function render(){
+  const f=FLUXOS[cur];
+  $('#tabs').innerHTML=ORDEM.map(k=>`<button class="${k===cur?'on':''}" data-k="${k}">${FLUXOS[k].nome}</button>`).join('');
+  $('#tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{stop();cur=b.dataset.k;pos=-1;history.replaceState(null,'','#'+cur);render()});
+  $('#intro').textContent=f.intro;$('#nota').textContent=f.nota;
+  $('#legend').innerHTML=f.lanes.map((n,i)=>`<span style="--c:${CORES[i]}">${esc(n)}</span>`).join('')+'<span style="--c:var(--ok)">etapa já percorrida</span>';
+  modo=isMobile()?'v':'s';
+  if(modo==='v')renderLista(f);else renderSvg(f);
+  paint();
+}
+function renderLista(f){
+  $('#chart').innerHTML=`<div class="vlist">${f.seq.map((id,i)=>{const s=f.steps.find(x=>x.id===id);return `<button class="vstep" data-id="${id}" style="--c:${CORES[s.lane]}"><span class="num">${i+1}${s.auto?' ⚙':''}</span><span>${esc(s.t)}<small>${esc(f.lanes[s.lane])}${s.type==='d'?' · decisão (se não aprovar, volta ao início)':''}</small></span></button>`}).join('')}</div>`;
+  $('#chart').querySelectorAll('.vstep').forEach(n=>n.onclick=()=>{stop();pos=f.seq.indexOf(n.dataset.id);paint(true)});
+}
+function renderSvg(f){
+  const by={};f.steps.forEach(s=>by[s.id]=s);
+  const maxc=f.steps.reduce((m,s)=>Math.max(m,s.col),0);
+  const W=PADL+(maxc+1)*COLW+8,H=f.lanes.length*ROWH+12;
+  let g=`<svg style="max-width:${Math.round(W*1.08)}px;margin:0 auto" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Fluxograma: ${esc(f.nome)}"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--gold-d)"/></marker></defs>`;
+  f.lanes.forEach((n,i)=>{g+=`<rect class="lane-bg ${i%2?'alt':''}" x="0" y="${i*ROWH+6}" width="${W}" height="${ROWH}"/><rect x="0" y="${i*ROWH+6}" width="5" height="${ROWH}" fill="${CORES[i]}"/><text class="lane-name" x="12" y="${i*ROWH+6+ROWH/2}" dominant-baseline="middle">${wrap(n,12).map((l,j,a)=>`<tspan x="12" dy="${j===0?-(a.length-1)*7:14}">${esc(l)}</tspan>`).join('')}</text>`});
+  f.edges.forEach((e,i)=>{
+    const a=by[e[0]],b=by[e[1]],pa=nodeXY(a),pb=nodeXY(b);let d,lx,ly,anc='middle';
+    if(e[3]==='back'){const ax=pa.x+BW/2,bx=pb.x+BW/2,top=Math.min(pa.y,pb.y)-6;d=`M${ax} ${pa.y-6} V${top} H${bx} V${pb.y}`;lx=(ax+bx)/2;ly=top-3}
+    else if(b.col>a.col){const x1=pa.x+BW+(a.type==='d'?6:0),y1=pa.y+BH/2,x2=pb.x,y2=pb.y+BH/2,xm=x1+(x2-x1)/2;d=y1===y2?`M${x1} ${y1} H${x2}`:`M${x1} ${y1} H${xm} V${y2} H${x2}`;lx=x1+3;ly=y1-5;anc='start'}
+    else{const x1=pa.x+BW/2,y1=pa.y+(pb.y>pa.y?BH:0),x2=pb.x+BW/2,y2=pb.y+(pb.y>pa.y?0:BH);d=`M${x1} ${y1} V${(y1+y2)/2} H${x2} V${y2}`;lx=x2;ly=(y1+y2)/2-4}
+    g+=`<path class="edge ${e[3]==='back'?'back':''}" data-from="${e[0]}" data-to="${e[1]}" d="${d}" marker-end="url(#ar)"/>${e[2]?`<text class="elabel" x="${lx}" y="${ly}" text-anchor="${anc}">${esc(e[2])}</text>`:''}`;
+  });
+  f.steps.forEach(s=>{
+    const p=nodeXY(s),c=CORES[s.lane],num=f.seq.indexOf(s.id)+1,dec=s.type==='d';
+    const shape=dec?`<polygon points="${p.x+BW/2},${p.y-2} ${p.x+BW+6},${p.y+BH/2} ${p.x+BW/2},${p.y+BH+2} ${p.x-6},${p.y+BH/2}"/>`:`<rect x="${p.x}" y="${p.y}" width="${BW}" height="${BH}" rx="9"/><rect class="bar" x="${p.x}" y="${p.y}" width="5" height="${BH}" fill="${c}" rx="2"/>`;
+    const lines=wrap(s.t,dec?12:18).slice(0,4);
+    const tx=p.x+(dec?BW/2:13);
+    g+=`<g class="node" data-id="${s.id}" tabindex="0" role="button" aria-label="Etapa ${num}: ${esc(s.t)}">${shape}<text class="n" x="${tx}" y="${p.y+(dec?BH/2-9:14)}" ${dec?'text-anchor="middle"':''} fill="${c}">${num}${s.auto?' ⚙':''}</text>${lines.map((l,j)=>`<text x="${tx}" y="${p.y+(dec?BH/2+5:28)+j*12.5}" ${dec?'text-anchor="middle"':''}>${esc(l)}</text>`).join('')}</g>`;
+  });
+  $('#chart').innerHTML=g+'</svg>';
+  $('#chart').querySelectorAll('.node').forEach(n=>{n.onclick=()=>{stop();pos=f.seq.indexOf(n.dataset.id);paint(true)};n.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();n.onclick()}}});
+}
+function paint(scroll){
+  const f=FLUXOS[cur];const id=pos>=0?f.seq[pos]:null;
+  document.querySelectorAll('.node,.vstep').forEach(n=>{const i=f.seq.indexOf(n.dataset.id);n.classList.toggle('on',i===pos);n.classList.toggle('done',pos>=0&&i<pos)});
+  document.querySelectorAll('.edge').forEach(e=>{const on=id&&e.dataset.to===id&&f.seq.indexOf(e.dataset.from)===pos-1;e.classList.toggle('on',!!on);e.setAttribute('marker-end',on?'url(#ao)':'url(#ar)')});
+  if(!id){$('#det').innerHTML=`<h2>Clique numa etapa ou reproduza o fluxo</h2><p style="color:var(--muted);margin:4px 0 0;font-size:13.5px">O símbolo ⚙ marca o que o sistema faz sozinho. A linha tracejada mostra o retorno quando algo é devolvido.</p><ol class="step-list">${f.seq.map(i=>{const s=f.steps.find(x=>x.id===i);return `<li>${esc(s.t)}${s.auto?' <span class="auto">automático</span>':''}</li>`}).join('')}</ol>`;$('#msgbox').innerHTML='<h2>Mensagens e documentos</h2><p style="color:var(--muted);font-size:13.5px;margin:4px 0 0">Nas etapas com aviso ou documento, aparece aqui o que a pessoa recebe (Teams, e-mail ou Telegram), com os campos a preencher.</p>';return}
+  const s=f.steps.find(x=>x.id===id);
+  $('#det').innerHTML=`<span class="tag" style="border-left:4px solid ${CORES[s.lane]}">${esc(f.lanes[s.lane])}</span>${s.auto?'<span class="auto">automático</span>':''}<h2>Etapa ${pos+1} de ${f.seq.length}: ${esc(s.t)}</h2><p style="margin:6px 0 0;font-size:14px">${esc(s.d)}</p>`;
+  msgPanel(s);
+  if(scroll){const d=$('#detail').getBoundingClientRect();if(d.bottom>window.innerHeight||d.top<0)$('#detail').scrollIntoView({behavior:'smooth',block:'nearest'})}
+}
+function campoHtml(c){
+  const [r,t,v]=c;
+  if(t==='area')return `<label>${esc(r)}</label><textarea placeholder="Opcional">${esc(v)}</textarea>`;
+  if(t==='select')return `<label>${esc(r)}</label><select>${v.split('|').map(o=>`<option>${esc(o)}</option>`).join('')}</select>`;
+  return `<label>${esc(r)}</label><input type="${t}" value="${esc(v)}">`;
+}
+function msgPanel(s){
+  const m=s.msg,box=$('#msgbox');
+  if(!m){box.innerHTML='<h2>Mensagens e documentos</h2><p style="color:var(--muted);font-size:13.5px;margin:4px 0 0">Esta etapa não envia mensagem. Avance para a próxima.</p>';return}
+  if(m.k==='teams'){
+    const cp=(m.campos||[]);
+    box.innerHTML=`<h2>Mensagem no Teams</h2>
+    <div class="msg teams"><div class="mh"><b>Teams</b> · Aprovações · agora</div><div class="mb"><b>${esc(m.titulo)}</b><br><span style="color:var(--muted)">${esc(m.sub)}</span>${m.hint?`<div class="hint">${esc(m.hint)}</div>`:''}${cp.map(campoHtml).join('')}
+    <div class="acts">${(m.botoes||[]).map((b,i)=>`<button class="btn ${i?'o':'p'}" data-b="${i}">${esc(b)}</button>`).join('')}</div></div></div>
+    ${m.email?`<div class="msg mail"><div class="mh"><b>E-mail</b> · alternativa</div><div class="mb">Assunto: ${esc(m.email)}<div class="hint">Mesmos campos e botões no corpo da mensagem, ou o link <u>Responder no aplicativo</u>.</div></div></div>`:''}`;
+    box.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{const ok=b.dataset.b==='0';toast(ok?'Registrado (simulação). O fluxo segue.':'Registrado (simulação).');if(ok)go(1)});
+  }else if(m.k==='email'){
+    box.innerHTML=`<h2>E-mail enviado pelo sistema</h2><div class="msg mail"><div class="mh"><b>E-mail</b> · automático · de ${esc(m.de)}</div><div class="mb"><b>${esc(m.assunto)}</b><br>${esc(m.corpo)}<div class="hint">📎 ${esc(m.anexo)}</div></div></div>`;
+  }else if(m.k==='chat'){
+    box.innerHTML=`<h2>Resposta do sistema no Telegram</h2><div class="msg chat"><div class="mh"><b>Telegram</b> · bot de reembolso</div><div class="mb"><b>${esc(m.titulo)}</b><ul class="files">${m.linhas.map(l=>`<li>${esc(l)}</li>`).join('')}</ul></div></div>`;
+  }else if(m.k==='doc'){
+    box.innerHTML=`<h2>Documento gerado</h2><div class="msg"><div class="mh">📄 Documento (prévia)</div><div class="mb"><b>${esc(m.titulo)}</b><ul class="files">${m.linhas.map(l=>`<li>• ${esc(l)}</li>`).join('')}</ul>${m.aviso?`<div class="hint">${esc(m.aviso)}</div>`:''}${m.link?`<div class="hint"><a href="${m.link[0]}">${esc(m.link[1])}</a></div>`:''}</div></div>`;
+  }
+}
+function go(d){const f=FLUXOS[cur];pos=Math.max(0,Math.min(f.seq.length-1,pos+d));paint(true)}
+function stop(){if(timer){clearInterval(timer);timer=null;$('#play').textContent='▶ Reproduzir'}}
+$('#next').onclick=()=>{stop();go(1)};
+$('#prev').onclick=()=>{stop();go(-1)};
+$('#reset').onclick=()=>{stop();pos=-1;paint()};
+$('#play').onclick=()=>{
+  if(timer){stop();return}
+  const f=FLUXOS[cur];if(pos>=f.seq.length-1)pos=-1;
+  $('#play').textContent='⏸ Pausar';
+  timer=setInterval(()=>{if(pos>=f.seq.length-1){stop();return}pos++;paint(true)},2000);
+};
+window.addEventListener('resize',()=>{const m=isMobile()?'v':'s';if(m!==modo)render()});
+const h=location.hash.replace('#','');if(FLUXOS[h])cur=h;
+render();
+</script>
+</body>
+</html>
