@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demonstração | Reembolso de despesas</title>
+<style>
+:root{
+  --bg:#f3f3fa; --surface:#fff; --ink:#0c0b45; --muted:#58587a; --line:#e0e0ef;
+  --brand:#0d0c84; --brand2:#0a0a5a; --gold:#f2c562; --gold-d:#c88a1e; --soft:#ececfa;
+  --ok:#157347; --okbg:#e3f4ea; --warn:#8a5a00; --warnbg:#fff1cf; --bad:#a32035; --badbg:#fde6ea;
+  --radius:12px;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#08083a; --surface:#10104f; --ink:#ececff; --muted:#a7a7cf; --line:#25257a; --soft:#1a1a63;
+  --okbg:#10361f; --warnbg:#3a2f10; --badbg:#47121d; --ok:#7ddba0; --warn:#f3d98a; --bad:#ff9fb0;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.demo{background:var(--gold);color:#1a1400;text-align:center;font-size:13px;padding:6px 12px;font-weight:600}
+.app{max-width:1100px;margin:12px auto;padding:0 12px}
+.shell{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 8px 28px rgba(12,11,69,.12)}
+.top{background:var(--brand);color:#fff;display:flex;align-items:center;gap:12px;padding:10px 16px;font-size:13px}
+.hdr{background:linear-gradient(135deg,var(--brand2),var(--brand));color:#fff;display:flex;align-items:center;gap:12px;padding:12px 16px}
+.hdr h1{font-size:17px;margin:0;font-weight:700;flex:1}
+.steps{display:flex;gap:4px;padding:8px 12px;background:var(--soft);overflow-x:auto}
+.steps button{border:0;background:transparent;color:var(--muted);padding:7px 12px;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;white-space:nowrap}
+.steps button.on{background:var(--brand);color:#fff;font-weight:600}
+.body{padding:18px;min-height:460px}
+h2{margin:0 0 4px;font-size:18px}
+h3.s{margin:18px 0 8px;font-size:15px}
+.sub{color:var(--muted);margin:0 0 14px;font-size:14px}
+.card{border:1px solid var(--line);border-radius:var(--radius);padding:14px;background:var(--surface)}
+.kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:14px}
+.kpi{border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;background:var(--surface);color:var(--ink)}
+.kpi .n{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.kpi small{color:var(--muted)}
+.kpi.alert{border-color:var(--gold-d);box-shadow:0 0 0 2px var(--gold)}
+.kpi.alert .n{color:var(--gold-d)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+select,input,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 9px;max-width:100%}
+textarea{width:100%;min-height:80px;resize:vertical}
+label.f{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+.cols{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.hb{display:grid;grid-template-columns:130px 1fr 34px;gap:8px;align-items:center;margin:6px 0;font-size:13px;cursor:pointer;border:0;background:none;width:100%;text-align:left;color:inherit;font-family:inherit;padding:2px 0}
+.hb:hover .tr{outline:2px solid var(--gold)}
+.hb.on{font-weight:700}
+.hb .tr{background:var(--soft);border-radius:99px;height:12px;overflow:hidden;display:flex}
+.hb .tr i{display:block;height:100%}
+.c-a{background:var(--bad)} .c-t{background:var(--gold-d)} .c-c{background:var(--brand)}
+.legend{display:flex;gap:12px;font-size:12px;color:var(--muted);margin:2px 0 6px;flex-wrap:wrap}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.legend .la::before{background:var(--bad)} .legend .lt::before{background:var(--gold-d)} .legend .lc::before{background:var(--brand)}
+.months{display:flex;align-items:flex-end;gap:6px;height:130px;margin-top:6px}
+.months div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;font-size:11px;color:var(--muted);height:100%}
+.months i{display:block;width:100%;background:var(--brand);border-radius:4px 4px 0 0;min-height:2px}
+.months b{font-size:11px;color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--muted);font-weight:600;font-size:12px;border-bottom:1px solid var(--line);padding:6px 8px}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--soft)}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.p-a{background:var(--badbg);color:var(--bad)} .p-t{background:var(--warnbg);color:var(--warn)} .p-c{background:var(--okbg);color:var(--ok)}
+.p-rec{background:var(--gold);color:#1a1400}
+.btn{border:0;border-radius:10px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer}
+.btn.p{background:var(--brand);color:#fff} .btn.g{background:var(--gold);color:#1a1400} .btn.o{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn.s{padding:4px 10px;font-size:13px}
+.bar{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap}
+.note{font-size:12px;color:var(--muted);margin-top:10px}
+.why{background:var(--soft);border-radius:10px;padding:12px 14px;font-size:14px;margin-bottom:14px}
+.alertbox{border:2px solid var(--gold-d);background:var(--warnbg);color:var(--ink);border-radius:10px;padding:10px 14px;margin:10px 0;font-size:14px}
+.okbox{border:1px solid var(--line);background:var(--okbg);border-radius:10px;padding:10px 14px;margin:10px 0;font-size:14px}
+.heat{overflow-x:auto}
+.heat table{min-width:640px}
+.heat td.h{text-align:center;font-weight:700;cursor:pointer;border:1px solid var(--surface);color:var(--ink)}
+.heat td.h0{color:var(--muted);font-weight:400}
+.dots{display:flex;gap:3px}
+.dots i{width:10px;height:10px;border-radius:3px;background:var(--soft)}
+.dots i.on{background:var(--brand)}
+.tl{border-left:3px solid var(--line);margin:8px 0 0 6px;padding-left:14px}
+.tl .it{position:relative;margin-bottom:12px}
+.tl .it::before{content:"";position:absolute;left:-21px;top:5px;width:11px;height:11px;border-radius:50%;background:var(--brand)}
+.tl .it.bad::before{background:var(--bad)}
+.tl small{color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--brand);color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:20}
+.toast.on{opacity:1}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.two{grid-template-columns:1fr}.hb{grid-template-columns:100px 1fr 30px}}
+.sec{border:1px solid var(--line);border-radius:var(--radius);margin-top:12px;overflow:hidden}
+.sec>b{display:block;background:var(--soft);padding:8px 12px;font-size:13px}
+.sec table{margin:0}
+.sec td:first-child{width:36%;color:var(--muted)}
+.att{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.att figure{margin:0;width:120px}
+.att img{width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid var(--line);display:block}
+.att figcaption{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.att .doc{width:120px;height:90px;border-radius:8px;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);text-align:center;padding:4px}
+.drop{border:2px dashed var(--gold-d);border-radius:10px;padding:14px;background:var(--bg);margin-top:8px}
+/* relatório */
+.paper{background:#fff;color:#111;max-width:780px;margin:12px auto;padding:28px 32px;border:1px solid #d9d9e6;box-shadow:0 6px 20px rgba(12,11,69,.15);font:12.5px/1.4 Georgia,"Times New Roman",serif}
+.paper .ph{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #0d0c84;padding-bottom:8px;margin-bottom:10px}
+.paper .ph b{font:700 14px system-ui,sans-serif;color:#0d0c84}
+.paper .ph span{font:11.5px system-ui,sans-serif;color:#555}
+.paper h4{margin:0;font:700 17px Georgia,serif;color:#0d0c84;text-align:center;letter-spacing:.04em}
+.paper table{font-size:12px;color:#111;border:1px solid #bbb}
+.paper td{border:1px solid #ccc;padding:5px 7px;vertical-align:top}
+.paper td.k{width:30%;background:#f1f1f8;font:700 10.5px system-ui,sans-serif;color:#333;text-transform:uppercase;letter-spacing:.03em}
+.paper .sig{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.paper .sig div{border-top:1px solid #333;padding-top:4px;font:11px system-ui,sans-serif;color:#333;text-align:center;min-height:42px}
+.paper .foot{margin-top:12px;border-top:1px solid #bbb;padding-top:6px;font:10.5px system-ui,sans-serif;color:#555;display:flex;justify-content:space-between;gap:8px}
+.paper .fotos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.paper .fotos img{width:100%;height:190px;object-fit:cover;border:1px solid #ccc}
+.paper .fotos p{margin:2px 0 0;font:11px system-ui,sans-serif;color:#555}
+.stamp{display:inline-block;border:2px solid #c88a1e;color:#8a5a00;padding:2px 10px;border-radius:6px;font:700 10.5px system-ui,sans-serif;transform:rotate(-3deg)}
+@media print{
+  body *{visibility:hidden}
+  .paper,.paper *{visibility:visible}
+  .paper{position:static;box-shadow:none;border:0;margin:0 auto;page-break-after:always;max-width:none}
+  #rel{position:absolute;left:0;top:0;width:100%}
+}
+</style>
+<style>
+.chat{background:var(--bg);border:1px solid var(--line);border-radius:12px;height:430px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.bub{max-width:86%;padding:8px 12px;border-radius:14px;font-size:14px;line-height:1.4;white-space:pre-line}
+.bub.u{align-self:flex-end;background:var(--brand);color:#fff;border-bottom-right-radius:4px}
+.bub.b{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px}
+.bub small{display:block;opacity:.7;font-size:11px;margin-bottom:2px}
+.send{display:grid;gap:8px}
+.smp{display:flex;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:8px 10px;cursor:pointer;font:inherit;width:100%}
+.smp:hover{border-color:var(--gold-d);box-shadow:0 0 0 2px var(--gold)}
+.smp i{font-style:normal;font-size:22px}
+.smp b{display:block;font-size:13px}.smp small{color:var(--muted);font-size:12px}
+.smp.done{opacity:.55}
+td.r{text-align:right;white-space:nowrap}
+.chk{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:var(--surface)}
+.chk .ic{font-size:20px;text-align:center}
+.chk small{display:block;color:var(--muted)}
+.zip{font:13px/1.7 ui-monospace,Consolas,monospace;background:var(--soft);border-radius:10px;padding:12px 14px;margin-top:12px}
+.zip .no{opacity:.6;text-decoration:line-through}
+.sigf{font:italic 22px "Segoe Script","Brush Script MT",cursive;color:#0d0c84;min-height:30px}
+.paper td.v{text-align:right;white-space:nowrap}
+.paper tr.tot td{font-weight:700;background:#f1f1f8}
+</style>
+</head>
+<body>
+<div class="demo">DEMONSTRAÇÃO com dados fictícios: pessoas, estabelecimentos, valores e regras são inventados. Nada é enviado de verdade.</div>
+<div class="app">
+ <div class="shell">
+  <div class="top"><span>⠿</span><b>Reembolso de Despesas</b><span style="opacity:.7">| Empresa Exemplo</span></div>
+  <div class="hdr"><h1 id="title">Viagem</h1><span style="font-size:13px;opacity:.85">Ana Souza</span></div>
+  <div class="steps" id="steps"></div>
+  <div class="body" id="body"></div>
+ </div>
+ <p class="note" style="text-align:center">Veja também o <a href="fluxos.html">fluxograma</a> do reembolso. O aplicativo real funciona pelo Telegram e gera o relatório em Word; esta página reproduz o conceito com a política de exemplo abaixo, que fica em arquivo de configuração e muda por empresa.</p>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const R=v=>'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const dm=d=>d.slice(8,10)+'/'+d.slice(5,7), dmy=d=>dm(d)+'/'+d.slice(0,4);
+const HOJE='2026-11-14';
+const P={teto:100,prazo:7};
+const V={destino:'Curitiba/PR',objetivo:'Visita técnica à filial: levantamento de processos',ida:'2026-11-10',volta:'2026-11-12',pernoite:true,adiant:200,aprov:false,
+ cc:[{n:'CC-100 Operações',p:60},{n:'CC-200 Projetos',p:40}]};
+const SMP=[
+ {id:1,f:'jantar_sabor_da_serra.jpg',ic:'📷',e:'Restaurante Sabor da Serra',d:'2026-11-10',v:62.40,cat:'Alimentação',t:'jantar',h:'Jantar, 10/11'},
+ {id:2,f:'lanche_padaria.jpg',ic:'📷',e:'Padaria Pão Quente',d:'2026-11-10',v:31.00,cat:'Alimentação',t:'lanche',h:'Lanche, 10/11'},
+ {id:3,f:'corrida_aeroporto.pdf',ic:'📄',e:'Corrida de aplicativo',d:'2026-11-10',v:48.70,cat:'Táxi/Uber',t:'corrida',h:'PDF da corrida, 10/11'},
+ {id:4,f:'jantar_mesa_boa.jpg',ic:'📷',e:'Restaurante Mesa Boa',d:'2026-11-11',v:78.00,cat:'Alimentação',t:'jantar',h:'Jantar, 11/11'},
+ {id:5,f:'jantar_forno_lento.jpg',ic:'📷',e:'Pizzaria Forno Lento',d:'2026-11-11',v:54.00,cat:'Alimentação',t:'jantar',h:'Segundo jantar no mesmo dia: passa do teto'},
+ {id:6,f:'bar_do_porto.jpg',ic:'📷',e:'Bar do Porto',d:'2026-11-11',v:40.00,cat:'Alimentação',t:'jantar',alc:true,h:'Nota com chope'},
+ {id:7,f:'almoco_cantina.jpg',ic:'📷',e:'Cantina Boa Mesa',d:'2026-11-11',v:38.00,cat:'Alimentação',t:'almoço',h:'Almoço, 11/11'},
+ {id:8,f:'hotel_diarias.pdf',ic:'📄',e:'Hotel Central (2 diárias)',d:'2026-11-12',v:540.00,cat:'Hospedagem',t:'hotel',h:'Fatura do hotel'},
+ {id:9,f:'estacionamento.jpg',ic:'📷',e:'Estacionamento do aeroporto',d:'2026-11-12',v:36.00,cat:'Pedágio/estacionamento',t:'estac',h:'Estacionamento, 12/11'},
+ {id:10,f:'maquininha_cartao.jpg',ic:'📷',e:'Comprovante de maquininha',d:'2026-11-11',v:25.00,cat:'Alimentação',t:'cartao',h:'Via do cartão, não é cupom fiscal'},
+ {id:11,f:'foto_borrada.jpg',ic:'📷',e:'Foto ilegível',t:'borrada',h:'Foto tremida'},
+ {id:12,f:'jantar_sabor_da_serra_2.jpg',ic:'📷',e:'Restaurante Sabor da Serra',d:'2026-11-10',v:62.40,cat:'Alimentação',t:'jantar',dupDe:1,h:'Mesmo cupom enviado de novo'}
+];
+const S={tela:'viagem',msgs:[],lan:[],sent:{}};
+const TABS=[['viagem','1. Viagem'],['comp','2. Comprovantes'],['conf','3. Conferência'],['rel','4. Relatório e ZIP']];
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200)}
+function go(t){S.tela=t;render();window.scrollTo({top:0})}
+function limite(){const d=new Date(V.volta+'T12:00:00');d.setDate(d.getDate()+P.prazo);return d.toISOString().slice(0,10)}
+function diasRest(){return Math.round((new Date(limite()+'T12:00:00')-new Date(HOJE+'T12:00:00'))/864e5)}
+function aceitos(){return S.lan.filter(l=>l.ok)}
+function alimDia(){
+  const m={};aceitos().filter(l=>l.cat==='Alimentação'&&(l.t==='jantar'||l.t==='lanche')).forEach(l=>{(m[l.d]=m[l.d]||{soma:0,it:[]});m[l.d].soma+=l.v;m[l.d].it.push(l)});return m}
+function totais(){
+  const t={'Passagem terrestre':0,'Táxi/Uber':0,'Pedágio/estacionamento':0,'Combustível':0,'Alimentação':0,'Hospedagem':0,'Outros':0};
+  aceitos().forEach(l=>{if(l.cat!=='Alimentação'&&t[l.cat]!==undefined)t[l.cat]+=l.v});
+  let exc=0;const dias=alimDia();
+  if(V.pernoite)Object.values(dias).forEach(x=>{t['Alimentação']+=Math.min(x.soma,P.teto);exc+=Math.max(0,x.soma-P.teto)});
+  const total=Object.values(t).reduce((a,b)=>a+b,0);return{t,exc,total,dias}}
+function resposta(s){
+  if(s.t==='borrada')return {txt:'❌ Não consegui ler esse arquivo.\nEnvie outra foto, com boa luz e o cupom inteiro.',lan:null};
+  if(s.t==='cartao')return {txt:'❌ Isto parece o comprovante da maquininha (cartão). Ele não vale como comprovante.\nEnvie o cupom fiscal, o recibo ou a nota fiscal.',lan:{...s,ok:false,mot:'Comprovante de cartão'}};
+  if(S.lan.some(l=>l.id===s.id)||(s.dupDe&&S.lan.some(l=>l.id===s.dupDe)))return {txt:'ℹ️ Este comprovante já foi lançado (mesmo estabelecimento, data e valor). Não lancei de novo.',lan:null};
+  if(s.alc)return {txt:`⚠️ ${s.e} · ${dm(s.d)} · ${R(s.v)}\nVi um item que parece bebida alcoólica (chope). Pela política de exemplo, nota com bebida alcoólica não é aceita.\nGuardei o arquivo, mas ele fica fora do reembolso.`,lan:{...s,ok:false,mot:'Bebida alcoólica'}};
+  if(s.t==='almoço')return {txt:`ℹ️ ${s.e} · ${dm(s.d)} · ${R(s.v)}\nPela política de exemplo, almoço não é reembolsável. Guardei o comprovante, mas ele não entra no relatório.`,lan:{...s,ok:false,mot:'Fora da política'}};
+  const l={...s,ok:true};let extra='';
+  if(s.cat==='Alimentação'){
+    if(!V.pernoite){extra='\nA viagem está sem pernoite em hotel: a diária de jantar e lanche não se aplica.'}
+    else{const soma=S.lan.filter(x=>x.ok&&x.cat==='Alimentação'&&x.d===s.d&&(x.t==='jantar'||x.t==='lanche')).reduce((a,x)=>a+x.v,0)+s.v;
+      extra=soma>P.teto?`\n⚠️ Total do dia ${dm(s.d)}: ${R(soma)}. Passa do teto de ${R(P.teto)}: ${R(soma-P.teto)} não serão reembolsados.`:`\nTotal de alimentação em ${dm(s.d)}: ${R(soma)} de ${R(P.teto)} (sobram ${R(P.teto-soma)}).`}}
+  return {txt:`✅ Recebi${s.f.endsWith('.pdf')?' (PDF)':''}: ${s.e} · ${dm(s.d)} · ${R(s.v)} · ${s.cat}${extra}\nO arquivo original foi guardado na viagem.`,lan:l}}
+function enviar(id){const s=SMP.find(x=>x.id===id);S.msgs.push({u:1,t:'📎 '+s.f});const r=resposta(s);if(r.lan)S.lan.push(r.lan);S.msgs.push({u:0,t:r.txt});S.sent[id]=1;render()}
+function lerForm(){V.destino=$('#vd').value;V.objetivo=$('#vo').value;V.ida=$('#vi').value||V.ida;V.volta=$('#vv').value||V.volta;V.pernoite=$('#vp').checked;V.adiant=parseFloat(String($('#va').value).replace(',','.'))||0;P.teto=parseFloat(String($('#vt').value).replace(',','.'))||P.teto}
+function tViagem(){
+  $('#title').textContent='Viagem';
+  $('#body').innerHTML=`<h2>Nova viagem</h2><p class="sub">O relatório é feito por viagem. No aplicativo real, o assistente do Telegram faz estas perguntas em botões.</p>
+  <div class="cols"><div class="card"><label class="f">Destino</label><input id="vd" value="${esc(V.destino)}" style="width:100%">
+  <label class="f">Objetivo da viagem</label><input id="vo" value="${esc(V.objetivo)}" style="width:100%">
+  <div class="two"><div><label class="f">Ida</label><input type="date" id="vi" value="${V.ida}"></div><div><label class="f">Volta</label><input type="date" id="vv" value="${V.volta}"></div></div>
+  <label class="f"><input type="checkbox" id="vp" ${V.pernoite?'checked':''}> Com pernoite em hotel (a diária de jantar e lanche só vale com pernoite)</label>
+  <label class="f">Adiantamento recebido (R$)</label><input id="va" value="${V.adiant}" inputmode="decimal" style="width:140px"></div>
+  <div class="card"><b>Centros de custo</b><table><tbody>${V.cc.map(c=>`<tr><td>${c.n}</td><td class="r">${c.p}%</td></tr>`).join('')}</tbody></table>
+  <h3 class="s">Política de exemplo (arquivo de configuração)</h3>
+  <ul style="margin:0;padding-left:18px;font-size:14px"><li>Jantar e lanche: teto de R$ <input id="vt" value="${P.teto}" inputmode="decimal" style="width:70px"> por dia, somando os cupons do dia</li><li>Almoço e café da manhã: não reembolsáveis</li><li>Comprovante de cartão e nota com bebida alcoólica: não aceitos</li><li>Prazo: ${P.prazo} dias corridos após o retorno</li></ul>
+  <div class="okbox">Prazo desta viagem: envie até <b>${dmy(limite())}</b> (hoje, na demonstração, é ${dmy(HOJE)}).</div></div></div>
+  <div class="bar"><span class="note">A política é só um exemplo. Em cada empresa, os tetos e regras ficam em configuração.</span><button class="btn p" id="vnext">Salvar e enviar comprovantes →</button></div>`;
+  $('#vnext').onclick=()=>{lerForm();if(!S.msgs.length)S.msgs.push({u:0,t:`🧳 Viagem aberta: ${V.destino}\n${dm(V.ida)} a ${dm(V.volta)} · ${V.pernoite?'com':'sem'} pernoite · centros de custo: ${V.cc.map(c=>c.n.split(' ')[0]+' '+c.p+'%').join(', ')}\nMande fotos, PDFs ou capturas dos comprovantes.`});go('comp')};
+  ['vd','vo','vi','vv','vp','va','vt'].forEach(i=>$('#'+i).onchange=lerForm)}
+function tComp(){
+  $('#title').textContent='Comprovantes (Telegram)';
+  const tb=S.lan.length?S.lan.map(l=>`<tr><td>${dm(l.d)}</td><td>${l.e}</td><td>${l.cat}${l.t==='jantar'||l.t==='lanche'||l.t==='almoço'?' · '+l.t:''}</td><td class="r">${R(l.v)}</td><td>${l.ok?'<span class="pill p-c">aceito</span>':`<span class="pill p-a">fora: ${l.mot}</span>`}</td></tr>`).join(''):'<tr><td colspan="5" style="color:var(--muted)">Nenhum comprovante enviado ainda.</td></tr>';
+  $('#body').innerHTML=`<h2>Mande o comprovante na hora</h2><p class="sub">Clique em um comprovante de exemplo para "enviar" ao bot. Experimente os que dão aviso: o segundo jantar do dia, a nota com chope, o cartão, a foto borrada e o cupom repetido.</p>
+  <div class="cols"><div><div class="chat" id="chat">${S.msgs.map(m=>`<div class="bub ${m.u?'u':'b'}">${m.u?'':'<small>Bot de reembolso</small>'}${esc(m.t)}</div>`).join('')}</div></div>
+  <div><div class="send">${SMP.map(s=>`<button class="smp ${S.sent[s.id]?'done':''}" data-s="${s.id}"><i>${s.ic}</i><span><b>${s.f}</b><small>${s.h}</small></span></button>`).join('')}</div></div></div>
+  <h3 class="s">Lançamentos da viagem</h3><div style="overflow-x:auto"><table><thead><tr><th>Data</th><th>Estabelecimento</th><th>Categoria</th><th style="text-align:right">Valor</th><th>Situação</th></tr></thead><tbody>${tb}</tbody></table></div>
+  <div class="bar"><button class="btn o" id="back">← Viagem</button><button class="btn p" id="next">Ver conferência →</button></div>`;
+  const c=$('#chat');c.scrollTop=c.scrollHeight;
+  document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>enviar(+b.dataset.s));
+  $('#back').onclick=()=>go('viagem');$('#next').onclick=()=>go('conf')}
+function tConf(){
+  $('#title').textContent='Conferência';
+  const {exc,dias}=totais();const ac=aceitos();
+  const it=(ic,t,d,pill)=>`<div class="chk"><span class="ic">${ic}</span><div><b>${t}</b><small>${d}</small></div>${pill?`<span class="pill ${pill[0]}">${pill[1]}</span>`:''}</div>`;
+  const dd=Object.entries(dias).sort().map(([d,x])=>`${dm(d)}: ${R(x.soma)}`).join(' · ')||'nenhum jantar ou lanche lançado';
+  const rest=diasRest();
+  $('#body').innerHTML=`<h2>Antes de gerar o pacote</h2><p class="sub">O sistema confere as regras e mostra o que falta. O que for aviso, você decide.</p>
+  ${it(ac.length?'✅':'⚠️','Comprovantes aceitos',`${ac.length} comprovante(s) válido(s), somando ${R(ac.reduce((a,l)=>a+l.v,0))} antes dos tetos.`,[ac.length?'p-c':'p-t',ac.length?'ok':'envie ao menos um'])}
+  ${it(S.lan.some(l=>l.t==='cartao')?'ℹ️':'✅','Comprovante de cartão',S.lan.some(l=>l.t==='cartao')?'Um comprovante de maquininha foi recusado e fica fora do pacote.':'Nenhum enviado.',['p-c','ok'])}
+  ${it(S.lan.some(l=>l.alc)?'⚠️':'✅','Bebida alcoólica',S.lan.some(l=>l.alc)?'Uma nota com bebida alcoólica ficou fora do reembolso. Veja se há outro cupom só com a refeição.':'Nenhum alerta.',S.lan.some(l=>l.alc)?['p-t','aviso']:['p-c','ok'])}
+  ${it(exc>0?'⚠️':'✅','Teto diário de jantar e lanche',`${dd}. Teto de ${R(P.teto)} por dia.${exc>0?` Excedente que não será reembolsado: <b>${R(exc)}</b>.`:''}${V.pernoite?'':' Sem pernoite em hotel: a diária não se aplica.'}`,exc>0?['p-t','excedente']:['p-c','ok'])}
+  ${it('✅','Refeições fora da política',S.lan.some(l=>l.mot==='Fora da política')?'Almoço guardado, mas não reembolsável.':'Nenhuma.',['p-c','ok'])}
+  ${it('✅','Centros de custo',V.cc.map(c=>c.n+' '+c.p+'%').join(' e '),['p-c','ok'])}
+  <div class="chk"><span class="ic">${V.aprov?'✅':'⚠️'}</span><div><b>E-mail de aprovação da viagem</b><small>A empresa exige anexar a aprovação. O sistema não envia nada: você junta o arquivo.</small><label style="font-size:14px"><input type="checkbox" id="ap" ${V.aprov?'checked':''}> Já tenho o e-mail de aprovação</label></div><span class="pill ${V.aprov?'p-c':'p-t'}">${V.aprov?'ok':'falta anexar'}</span></div>
+  ${it(rest>=0?'✅':'❌','Prazo de envio',`Enviar até ${dmy(limite())} (${P.prazo} dias após a volta). ${rest>=0?`Faltam ${rest} dia(s).`:'Prazo vencido.'}`,rest>=0?['p-c','no prazo']:['p-a','vencido'])}
+  <div class="bar"><button class="btn o" id="back">← Comprovantes</button><button class="btn g" id="gen">Gerar pacote de reembolso →</button></div>`;
+  $('#ap').onchange=e=>{V.aprov=e.target.checked;tConf()};$('#back').onclick=()=>go('comp');$('#gen').onclick=()=>go('rel')}
+function tRel(){
+  $('#title').textContent='Relatório e pacote';
+  const {t,total,dias}=totais();const adi=V.adiant,saldo=total-adi;
+  const obsAl=Object.entries(dias).sort().map(([d,x])=>`${dmy(d)}: ${x.it.map(i=>i.t+' '+R(i.v)).join(' + ')}${x.soma>P.teto?` (teto ${R(P.teto)}; excedente ${R(x.soma-P.teto)} não reembolsado)`:''}`).join('<br>')||'';
+  const num=k=>String(k).padStart(2,'0');let n=1;const arq=[`${num(n++)}. Relatório de Despesas.docx`];
+  if(V.aprov)arq.push(`${num(n++)}. Aprovação da viagem.pdf`);
+  aceitos().filter(l=>!(l.cat==='Alimentação'&&!V.pernoite)).forEach(l=>arq.push(`${num(n++)}. ${l.cat==='Alimentação'?(l.t==='jantar'?'Jantar':'Lanche'):l.cat==='Táxi/Uber'?'Corrida':l.cat} ${dm(l.d).replace('/','.')}.${l.f.split('.').pop()}`));
+  const sai=S.lan.filter(l=>!l.ok);
+  const linha=(i,nm,k,obs)=>`<tr><td>${i}</td><td>${nm}</td><td class="v">${R(t[k]||0)}</td><td>${obs||''}</td></tr>`;
+  $('#body').innerHTML=`<h2>Pacote pronto para você revisar e enviar</h2><p class="sub">Relatório no modelo genérico (no sistema real, em Word, com o modelo da empresa) e ZIP com os comprovantes numerados. <b>O sistema não envia nada à empresa.</b></p>
+  <div class="paper" id="paper"><div class="ph"><div><b>EMPRESA EXEMPLO</b><br><span>Modelo genérico de demonstração</span></div><div style="text-align:right"><span class="stamp">DEMONSTRAÇÃO</span></div></div>
+  <h4>RELATÓRIO DE DESPESAS DE VIAGEM</h4>
+  <table style="margin-top:10px"><tbody><tr><td class="k">Funcionário</td><td>Ana Souza</td><td class="k">Data</td><td>${dmy(HOJE)}</td></tr><tr><td class="k">Destino</td><td colspan="3">${esc(V.destino)}</td></tr><tr><td class="k">Objetivo</td><td colspan="3">${esc(V.objetivo)}</td></tr><tr><td class="k">Itinerário</td><td colspan="3">Ida ${dmy(V.ida)}: São Paulo → ${esc(V.destino)} · Volta ${dmy(V.volta)}: ${esc(V.destino)} → São Paulo</td></tr><tr><td class="k">Centros de custo</td><td colspan="3">${V.cc.map(c=>`${c.n}: ${c.p}% (${R(total*c.p/100)})`).join(' · ')}</td></tr></tbody></table>
+  <table style="margin-top:8px"><thead><tr><td class="k" style="width:6%">Nº</td><td class="k">Descrição</td><td class="k" style="width:18%;text-align:right">Valor a reembolsar</td><td class="k" style="width:36%">Observações</td></tr></thead><tbody>
+  ${linha(1,'Passagem terrestre','Passagem terrestre')}${linha(2,'Táxi / aplicativo','Táxi/Uber')}${linha(3,'Pedágio / estacionamento','Pedágio/estacionamento')}${linha(4,'Combustível','Combustível')}${linha(5,'Alimentação','Alimentação',obsAl)}${linha(6,'Hospedagem','Hospedagem')}${linha(7,'Outros','Outros')}
+  <tr class="tot"><td></td><td>TOTAL GERAL</td><td class="v">${R(total)}</td><td></td></tr></tbody></table>
+  <table style="margin-top:8px"><tbody><tr><td class="k">Adiantamento recebido</td><td class="v">${R(adi)}</td><td class="k">Despesa líquida</td><td class="v">${R(total)}</td><td class="k">${saldo>=0?'A receber':'A restituir'}</td><td class="v"><b>${R(Math.abs(saldo))}</b></td></tr></tbody></table>
+  <div class="sig"><div>Empresa</div><div><span class="sigf">Ana Souza</span><br>Funcionário</div><div>Aprovação</div></div>
+  <div class="foot"><span>No arquivo real, as fotos dos comprovantes seguem nas páginas seguintes.</span><span>Documento de demonstração</span></div></div>
+  <h3 class="s">Pacote ZIP: Reembolso_Curitiba_2026-11.zip</h3>
+  <div class="zip">${arq.map(a=>'📄 '+a).join('<br>')}${V.aprov?'':'<br><span class="no">📄 Aprovação da viagem (falta anexar)</span>'}${sai.length?'<br><br><b>Ficaram de fora:</b><br>'+sai.map(l=>`<span class="no">📄 ${l.f}</span> (${l.mot})`).join('<br>'):''}</div>
+  <div class="bar"><button class="btn o" id="back">← Conferência</button><span><button class="btn o" id="pr">Imprimir a prévia</button> <button class="btn g" id="zip">Baixar ZIP (simulado)</button></span></div>
+  <p class="note">Na demonstração nada é gravado nem baixado. No sistema real o relatório sai em Word (.docx), com as fotos coladas e a assinatura guardada, e o envio à empresa é feito por você.</p>`;
+  $('#back').onclick=()=>go('conf');$('#pr').onclick=()=>window.print();$('#zip').onclick=()=>toast('Simulado: o ZIP real seria gerado aqui')}
+function render(){
+  $('#steps').innerHTML=TABS.map(([k,n])=>`<button class="${k===S.tela?'on':''}" data-k="${k}">${n}</button>`).join('');
+  document.querySelectorAll('#steps button').forEach(b=>b.onclick=()=>go(b.dataset.k));
+  ({viagem:tViagem,comp:tComp,conf:tConf,rel:tRel})[S.tela]()}
+render();
+</script>
+</body>
+</html>
