@@ -175,7 +175,7 @@ const BASE=[
  {n:'Qualidade',ult:'2026-10-07',nota:95,ab:0,venc:0},{n:'Compras',ult:'2026-10-09',nota:100,ab:0,venc:0}];
 const I={proj:'Projeto Alfa',data:HOJE,r:{},obs:{},foto:{},st:'edicao',acoes:[],dec:null,coment:''};
 const S={tela:'painel'};
-const TABS=[['painel','1. Painel'],['insp','2. Inspeção'],['plano','3. Plano de ação'],['aprov','4. Aprovação'],['rel','5. Relatório']];
+const TABS=[['painel','1. Painel'],['insp','2. Inspeção'],['plano','3. Plano de ação'],['aprov','4. Aprovação'],['rel','5. Relatório'],['video','Vídeo do app']];
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200)}
 function go(t){S.tela=t;render();window.scrollTo({top:0})}
 function cont(){const v=Object.values(I.r);return{c:v.filter(x=>x==='C').length,n:v.filter(x=>x==='N').length,a:v.filter(x=>x==='A').length,resp:v.length}}
@@ -260,10 +260,18 @@ function tRel(){
   <div class="bar"><button class="btn o" id="b">← Aprovação</button><button class="btn g" id="pr">Imprimir a prévia</button></div>
   <p class="note">Na demonstração nada é gravado. No sistema real, o relatório é gerado em PDF ou Word e guardado no histórico do projeto.</p>`;
   $('#b').onclick=()=>go('aprov');$('#pr').onclick=()=>window.print()}
+function tVideo(){
+  $('#title').textContent='Vídeo do aplicativo';
+  $('#body').innerHTML=`<h2>O aplicativo em uso</h2><p class="sub">Gravação do aplicativo real (Power Apps), com dados de teste: matriz de checklists, preenchimento, plano de ação, relatório e cadastro de checklists. Trechos cortados e acelerados.</p>
+  <video controls preload="metadata" playsinline poster="../assets/videos/app-checklist.jpg" style="width:100%;max-width:960px;border-radius:12px;border:1px solid var(--line);display:block;margin:0 auto"><source src="../assets/videos/app-checklist.mp4" type="video/mp4">Seu navegador não reproduz este vídeo.</video>
+  <p class="note" style="text-align:center">Sem áudio. A demonstração interativa acima usa um modelo de exemplo, com dados fictícios.</p>
+  <div class="bar"><button class="btn o" id="b">← Voltar ao painel</button></div>`;
+  $('#b').onclick=()=>go('painel')}
 function render(){
   $('#steps').innerHTML=TABS.map(([k,n])=>`<button class="${k===S.tela?'on':''}" data-k="${k}">${n}</button>`).join('');
   document.querySelectorAll('#steps button').forEach(b=>b.onclick=()=>go(b.dataset.k));
-  ({painel:tPainel,insp:tInsp,plano:tPlano,aprov:tAprov,rel:tRel})[S.tela]()}
+  ({painel:tPainel,insp:tInsp,plano:tPlano,aprov:tAprov,rel:tRel,video:tVideo})[S.tela]()}
+if(location.hash==='#video')S.tela='video';
 render();
 </script>
 </body>
