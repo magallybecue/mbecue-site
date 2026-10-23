@@ -190,7 +190,7 @@ function tPainel(){
   <div class="kpis"><div class="kpi"><div class="n">${I.st==='edicao'?14:15}</div><small>checklists no mês</small></div><div class="kpi"><div class="n">${media}%</div><small>nota média</small></div><div class="kpi"><div class="n">${ab}</div><small>ações em aberto</small></div><div class="kpi alert"><div class="n">${ve}</div><small>ações vencidas</small></div></div>
   <div style="overflow-x:auto"><table><thead><tr><th>Projeto / setor</th><th>Último checklist</th><th>Nota</th><th>Ações abertas</th><th>Vencidas</th><th>Situação</th></tr></thead><tbody>
   ${L.map(l=>`<tr><td><b>${l.n}</b></td><td>${dmy(l.ult)}</td><td><span class="pill ${pc(l.nota)}">${l.nota}%</span></td><td>${l.ab}</td><td>${l.venc?`<span class="pill p-a">${l.venc}</span>`:'0'}</td><td>${l.sit==='—'?'<span class="mini">—</span>':`<span class="pill ${l.sit==='Aprovado'?'p-c':l.sit==='Reprovado'?'p-a':'p-t'}">${l.sit}</span>`}</td></tr>`).join('')}</tbody></table></div>
-  <div class="bar"><span class="note">Perfis de acesso: inspetor preenche, responsável trata a ação, gestor aprova.</span><button class="btn p" id="ni">Novo checklist de inspeção →</button></div>`;
+  <div class="bar"><span class="note">Perfis de acesso: inspetor preenche, responsável trata a ação, gestor aprova. Lembretes automáticos avisam antes do prazo.</span><button class="btn p" id="ni">Novo checklist de inspeção →</button></div>`;
   $('#ni').onclick=()=>go('insp')}
 function setR(id,v){if(I.st!=='edicao')return;I.r[id]=v;tInsp(true)}
 function tInsp(keep){
@@ -210,6 +210,21 @@ function tInsp(keep){
   $('#env').onclick=()=>{if(lock){go('plano');return}const f=ITENS.length-k.resp;if(f>0){toast('Faltam '+f+' item(ns) sem resposta');return}
     I.acoes=ITENS.filter(i=>I.r[i.id]==='N').map((i,n)=>({id:n+1,item:i.t,num:i.id,resp:PESSOAS[n%PESSOAS.length],prazo:soma(HOJE,7),st:'Aberta',trat:'',evid:false}));
     I.st='aprovacao';toast(I.acoes.length?I.acoes.length+' ação(ões) aberta(s) e aprovação enviada':'Aprovação enviada');go('plano')}}
+function lembretes(){
+  const P=I.acoes.filter(a=>a.st!=='Aprovada');
+  if(!I.acoes.length)return '';
+  if(!P.length)return `<div class="okbox">🔔 Todas as ações foram aprovadas: nenhum lembrete pendente.</div>`;
+  const prox=a=>{if(a.prazo<HOJE)return [`hoje (prazo vencido em ${dm(a.prazo)})`,GESTOR+' (gestor)'];
+    if(a.st==='Concluída')return [`${dm(soma(HOJE,1))} (aguardando aprovação)`,GESTOR+' (gestor)'];
+    return [`${dm(soma(a.prazo,-2))} (2 dias antes do prazo)`,a.resp]};
+  const sel=P.find(a=>a.id===S.lemb);
+  let card='';
+  if(sel){const [q,quem]=prox(sel);const venc=sel.prazo<HOJE,apr=sel.st==='Concluída';
+    card=`<div class="teams"><small>Teams · Lembrete automático (simulado)</small><h4>🔔 ${venc?'Ação vencida':apr?'Ação aguardando a sua aprovação':'Lembrete: ação vence em 2 dias'}</h4><small>Item ${sel.num}: ${sel.item} · ${I.proj} · prazo ${dmy(sel.prazo)}</small>
+    <p style="margin:10px 0;font-size:14px">Olá, ${quem.split(' (')[0]}. ${venc?`A ação de ${sel.resp} passou do prazo. Veja se precisa reatribuir ou combinar nova data.`:apr?`${sel.resp} concluiu esta ação e anexou a evidência. Falta a sua aprovação.`:'Esta ação do checklist de inspeção está com você e vence em 2 dias.'}</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn p s" data-fx="1">${apr?'Abrir e aprovar':'Abrir a ação'}</button><button class="btn o s" data-fx="1">${venc?'Reatribuir':apr?'Devolver':'Pedir mais prazo'}</button></div></div>`}
+  return `<h3 class="s">🔔 Lembretes automáticos</h3><p class="sub" style="margin-bottom:8px">O sistema avisa cada responsável antes do prazo e avisa o gestor quando uma ação vence ou espera aprovação. Ninguém precisa lembrar de cobrar.</p>
+  <div style="overflow-x:auto"><table><thead><tr><th>Ação</th><th>Próximo lembrete</th><th>Para quem</th><th></th></tr></thead><tbody>${P.map(a=>{const [q,quem]=prox(a);return `<tr><td>Item ${a.num}: ${a.item}</td><td>${q}</td><td>${quem}</td><td><button class="btn o s" data-lb="${a.id}">Ver lembrete</button></td></tr>`}).join('')}</tbody></table></div>${card}`}
 function tPlano(){
   $('#title').textContent='Plano de ação';
   if(I.st==='edicao'){$('#body').innerHTML=`<h2>Plano de ação</h2><div class="why">O plano é criado quando o inspetor envia o checklist: uma ação para cada item não conforme, com responsável e prazo.</div><div class="bar"><button class="btn o" id="b">← Ir para a inspeção</button></div>`;$('#b').onclick=()=>go('insp');return}
@@ -221,6 +236,7 @@ function tPlano(){
    ${a.st==='Aberta'?`<div class="row"><input data-tr="${a.id}" placeholder="O que foi feito" value="${esc(a.trat)}" style="flex:1;min-width:180px"><label class="mini"><input type="checkbox" data-ev="${a.id}" ${a.evid?'checked':''}> evidência anexada</label><button class="btn p s" data-cc="${a.id}">Concluir tratamento</button></div>`:''}
    ${a.st==='Concluída'?`<div class="row"><span class="mini">${esc(a.trat)}${a.evid?' · com evidência':''}</span><button class="btn g s" data-ap="${a.id}">Aprovar (gestor)</button><button class="btn o s" data-dv="${a.id}">Devolver</button></div>`:''}
    ${a.st==='Aprovada'?`<div class="mini">✅ ${esc(a.trat)} · aprovada por ${GESTOR}</div>`:''}</div>`).join(''):'<div class="okbox">Nenhum item não conforme: não há ações a abrir. 🎉</div>'}
+  ${lembretes()}
   <div class="bar"><button class="btn o" id="b">← Inspeção</button><button class="btn p" id="n">Ver aprovação do checklist →</button></div>`;
   document.querySelectorAll('[data-rs]').forEach(s=>s.onchange=()=>A.find(a=>a.id==s.dataset.rs).resp=s.value);
   document.querySelectorAll('[data-pz]').forEach(s=>s.onchange=()=>A.find(a=>a.id==s.dataset.pz).prazo=s.value);
@@ -229,6 +245,8 @@ function tPlano(){
   document.querySelectorAll('[data-cc]').forEach(b=>b.onclick=()=>{const a=A.find(x=>x.id==b.dataset.cc);if(!a.trat.trim()){toast('Descreva o que foi feito');return}a.st='Concluída';tPlano()});
   document.querySelectorAll('[data-ap]').forEach(b=>b.onclick=()=>{A.find(x=>x.id==b.dataset.ap).st='Aprovada';tPlano()});
   document.querySelectorAll('[data-dv]').forEach(b=>b.onclick=()=>{A.find(x=>x.id==b.dataset.dv).st='Aberta';toast('Ação devolvida ao responsável');tPlano()});
+  document.querySelectorAll('[data-lb]').forEach(x=>x.onclick=()=>{S.lemb=+x.dataset.lb;tPlano();const t=document.querySelector('.teams');if(t)t.scrollIntoView({block:'nearest'})});
+  document.querySelectorAll('[data-fx]').forEach(x=>x.onclick=()=>toast('Na demonstração, os botões do lembrete são simulados'));
   $('#b').onclick=()=>go('insp');$('#n').onclick=()=>go('aprov')}
 function tAprov(){
   $('#title').textContent='Aprovação';
