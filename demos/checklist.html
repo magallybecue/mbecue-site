@@ -170,9 +170,22 @@ const MOD=[
 ];
 const ITENS=[];MOD.forEach(([c,l])=>l.forEach(t=>ITENS.push({id:ITENS.length+1,cat:c,t})));
 const BASE=[
- {n:'Projeto Alfa',ult:'2026-09-28',nota:92,ab:1,venc:0},{n:'Projeto Beta',ult:'2026-09-30',nota:81,ab:3,venc:1},
- {n:'Manutenção',ult:'2026-10-02',nota:88,ab:2,venc:0},{n:'Almoxarifado',ult:'2026-10-05',nota:70,ab:4,venc:2},
- {n:'Qualidade',ult:'2026-10-07',nota:95,ab:0,venc:0},{n:'Compras',ult:'2026-10-09',nota:100,ab:0,venc:0}];
+ {n:'Projeto Alfa',ult:'2026-09-28',nota:92,ab:1,venc:0},{n:'Projeto Beta',ult:'2026-09-30',nota:82,ab:2,venc:1},
+ {n:'Manutenção',ult:'2026-10-02',nota:88,ab:1,venc:0},{n:'Almoxarifado',ult:'2026-10-05',nota:70,ab:3,venc:2},
+ {n:'Qualidade',ult:'2026-10-07',nota:100,ab:0,venc:0},{n:'Compras',ult:'2026-10-09',nota:100,ab:0,venc:0}];
+/* checklists de exemplo de cada projeto (para abrir pelo painel) */
+const HIST={
+ 'Projeto Alfa':{N:{7:'Extintor da área B com validade vencida'},A:[],ac:[{num:7,prazo:'2026-10-20',st:'Aberta'}]},
+ 'Projeto Beta':{N:{2:'Corredor de acesso com material estocado',8:'Furadeira sem etiqueta de inspeção'},A:[3],ac:[{num:2,prazo:'2026-10-10',st:'Aberta'},{num:8,prazo:'2026-10-21',st:'Aberta'}]},
+ 'Manutenção':{N:{11:'Peças armazenadas sobre a bancada sem proteção'},A:[3,6,9,12],ac:[{num:11,prazo:'2026-10-22',st:'Aberta'}]},
+ 'Almoxarifado':{N:{5:'Dois colaboradores sem treinamento registrado',10:'Resíduos misturados na área de descarte',11:'Paletes empilhados acima do limite'},A:[3,6],ac:[{num:5,prazo:'2026-10-08',st:'Aberta'},{num:10,prazo:'2026-10-12',st:'Aberta'},{num:11,prazo:'2026-10-25',st:'Concluída',trat:'Paletes reorganizados em duas pilhas'}]},
+ 'Qualidade':{N:{},A:[6],ac:[]},
+ 'Compras':{N:{},A:[3,6,9],ac:[]}};
+function carregar(n){const b=BASE.find(x=>x.n===n),h=HIST[n];
+  Object.assign(I,{proj:n,data:b.ult,r:{},obs:{},foto:{},st:'aprovado',coment:'',hist:true});
+  ITENS.forEach(i=>I.r[i.id]=h.N[i.id]?'N':(h.A.includes(i.id)?'A':'C'));Object.entries(h.N).forEach(([k,v])=>I.obs[k]=v);
+  I.acoes=h.ac.map((a,k)=>({id:k+1,item:ITENS[a.num-1].t,num:a.num,resp:PESSOAS[k%PESSOAS.length],prazo:a.prazo,st:a.st,trat:a.trat||'',evid:!!a.trat}));
+  S.lemb=null;toast('Checklist de exemplo de '+n+' aberto');go(I.acoes.length?'plano':'rel')}
 const I={proj:'Projeto Alfa',data:HOJE,r:{},obs:{},foto:{},st:'edicao',acoes:[],dec:null,coment:''};
 const S={tela:'painel'};
 const TABS=[['painel','1. Painel'],['insp','2. Inspeção'],['plano','3. Plano de ação'],['aprov','4. Aprovação'],['rel','5. Relatório'],['video','Vídeo do app']];
@@ -181,17 +194,18 @@ function go(t){S.tela=t;render();window.scrollTo({top:0})}
 function cont(){const v=Object.values(I.r);return{c:v.filter(x=>x==='C').length,n:v.filter(x=>x==='N').length,a:v.filter(x=>x==='A').length,resp:v.length}}
 function nota(){const k=cont();return k.c+k.n?Math.round(k.c/(k.c+k.n)*100):null}
 const pc=n=>n>=90?'p-c':n>=75?'p-t':'p-a';
-function linhas(){return BASE.map(b=>{if(b.n!==I.proj||I.st==='edicao')return {...b,sit:'—'};
+function linhas(){return BASE.map(b=>{if(b.n!==I.proj||I.st==='edicao'||I.hist)return {...b,sit:'Aprovado'};
   const n=I.acoes.filter(a=>a.st!=='Aprovada').length;return {...b,ult:I.data,nota:nota(),ab:b.ab+n,sit:I.st==='aprovacao'?'Em aprovação':I.st==='aprovado'?'Aprovado':'Reprovado'}})}
 function tPainel(){
   $('#title').textContent='Painel';const L=linhas();
   const media=Math.round(L.reduce((a,l)=>a+l.nota,0)/L.length),ab=L.reduce((a,l)=>a+l.ab,0),ve=L.reduce((a,l)=>a+l.venc,0);
-  $('#body').innerHTML=`<h2>Matriz de checklists por projeto</h2><p class="sub">Cada projeto ou setor tem o seu histórico. A nota é a conformidade do último checklist aprovado.</p>
+  $('#body').innerHTML=`<h2>Matriz de checklists por projeto</h2><p class="sub">Cada projeto ou setor tem o seu histórico. A nota é a conformidade do último checklist aprovado. <b>Clique em um projeto</b> para abrir o checklist de exemplo, com plano de ação, lembretes e relatório, sem precisar preencher.</p>
   <div class="kpis"><div class="kpi"><div class="n">${I.st==='edicao'?14:15}</div><small>checklists no mês</small></div><div class="kpi"><div class="n">${media}%</div><small>nota média</small></div><div class="kpi"><div class="n">${ab}</div><small>ações em aberto</small></div><div class="kpi alert"><div class="n">${ve}</div><small>ações vencidas</small></div></div>
-  <div style="overflow-x:auto"><table><thead><tr><th>Projeto / setor</th><th>Último checklist</th><th>Nota</th><th>Ações abertas</th><th>Vencidas</th><th>Situação</th></tr></thead><tbody>
-  ${L.map(l=>`<tr><td><b>${l.n}</b></td><td>${dmy(l.ult)}</td><td><span class="pill ${pc(l.nota)}">${l.nota}%</span></td><td>${l.ab}</td><td>${l.venc?`<span class="pill p-a">${l.venc}</span>`:'0'}</td><td>${l.sit==='—'?'<span class="mini">—</span>':`<span class="pill ${l.sit==='Aprovado'?'p-c':l.sit==='Reprovado'?'p-a':'p-t'}">${l.sit}</span>`}</td></tr>`).join('')}</tbody></table></div>
+  <div style="overflow-x:auto"><table><thead><tr><th>Projeto / setor</th><th>Último checklist</th><th>Nota</th><th>Ações abertas</th><th>Vencidas</th><th>Situação</th><th></th></tr></thead><tbody>
+  ${L.map(l=>`<tr class="click" data-op="${l.n}"><td><b>${l.n}</b></td><td>${dmy(l.ult)}</td><td><span class="pill ${pc(l.nota)}">${l.nota}%</span></td><td>${l.ab}</td><td>${l.venc?`<span class="pill p-a">${l.venc}</span>`:'0'}</td><td>${l.sit==='—'?'<span class="mini">—</span>':`<span class="pill ${l.sit==='Aprovado'?'p-c':l.sit==='Reprovado'?'p-a':'p-t'}">${l.sit}</span>`}</td><td><button class="btn o s" data-op="${l.n}">Abrir</button></td></tr>`).join('')}</tbody></table></div>
   <div class="bar"><span class="note">Perfis de acesso: inspetor preenche, responsável trata a ação, gestor aprova. Lembretes automáticos avisam antes do prazo.</span><button class="btn p" id="ni">Novo checklist de inspeção →</button></div>`;
-  $('#ni').onclick=()=>go('insp')}
+  $('#ni').onclick=()=>{if(I.hist)Object.assign(I,{proj:'Projeto Alfa',data:HOJE,r:{},obs:{},foto:{},st:'edicao',acoes:[],coment:'',hist:false});go('insp')};
+  document.querySelectorAll('tr[data-op]').forEach(t=>t.onclick=()=>carregar(t.dataset.op))}
 function setR(id,v){if(I.st!=='edicao')return;I.r[id]=v;tInsp(true)}
 function tInsp(keep){
   $('#title').textContent='Inspeção';const k=cont(),nt=nota(),lock=I.st!=='edicao';
@@ -252,9 +266,9 @@ function tAprov(){
   $('#title').textContent='Aprovação';
   if(I.st==='edicao'){$('#body').innerHTML=`<h2>Aprovação</h2><div class="why">Quando o inspetor envia o checklist, o gestor recebe um pedido de aprovação no Teams (ou por e-mail) com o resultado e o plano de ação.</div><div class="bar"><button class="btn o" id="b">← Ir para a inspeção</button></div>`;$('#b').onclick=()=>go('insp');return}
   const nc=ITENS.filter(i=>I.r[i.id]==='N'),nt=nota();
-  const dec=I.st==='aprovado'?`<div class="okbox">✅ Aprovado por ${GESTOR} em ${dmy(HOJE)}.${I.coment?' Comentário: '+esc(I.coment):''}<br><span class="mini">O sistema atualiza a lista de itens com a decisão e o painel com a nota.</span></div>`:I.st==='reprovado'?`<div class="alertbox">↩️ Devolvido por ${GESTOR}. Comentário: ${esc(I.coment||'(sem comentário)')}<br><span class="mini">O inspetor é avisado e pode corrigir e reenviar.</span> <button class="btn o s" id="rr">Reabrir para correção</button></div>`:'';
+  const dec=I.st==='aprovado'?`<div class="okbox">✅ Aprovado por ${GESTOR} em ${dmy(I.data)}.${I.coment?' Comentário: '+esc(I.coment):''}<br><span class="mini">O sistema atualiza a lista de itens com a decisão e o painel com a nota.</span></div>`:I.st==='reprovado'?`<div class="alertbox">↩️ Devolvido por ${GESTOR}. Comentário: ${esc(I.coment||'(sem comentário)')}<br><span class="mini">O inspetor é avisado e pode corrigir e reenviar.</span> <button class="btn o s" id="rr">Reabrir para correção</button></div>`:'';
   $('#body').innerHTML=`<h2>Pedido de aprovação (simulado)</h2><p class="sub">É assim que o gestor recebe. O fluxo monta o resumo do checklist, envia o pedido e <b>espera</b> a resposta; ao responder, atualiza os itens.</p>
-  <div class="teams"><small>Teams · Aprovações</small><h4>Aprovação de checklist · ${I.proj}</h4><small>Solicitado por ${INSP} · ${dmy(HOJE)}</small>
+  <div class="teams"><small>Teams · Aprovações</small><h4>Aprovação de checklist · ${I.proj}</h4><small>Solicitado por ${INSP} · ${dmy(I.data)}</small>
   <table class="zebra"><tbody><tr><td>Nota de conformidade</td><td class="v"><b>${nt}%</b></td></tr><tr><td>Itens não conformes</td><td class="v"><b>${nc.length}</b></td></tr><tr><td>Ações abertas</td><td class="v"><b>${I.acoes.length}</b></td></tr></tbody></table>
   ${nc.length?`<div class="mini" style="margin-bottom:6px">Não conformes: ${nc.map(i=>i.id+' '+i.t).join('; ')}</div>`:''}
   ${I.st==='aprovacao'?`<input id="cm" placeholder="Comentário (opcional)" style="width:100%"><div class="row" style="display:flex;gap:8px;margin-top:8px"><button class="btn p" id="ok">Aprovar</button><button class="btn o" id="no">Reprovar</button></div>`:''}</div>
